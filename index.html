@@ -1,0 +1,3789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Chemical Reaction Simulator | AnkitStudyPoint</title>
+<meta name="description" content="Chemical Reaction Simulator for Class 10, 12 & D.Pharmacy students. Search any reaction, get equation, type, energy and full details. By AnkitStudyPoint.">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-deep: #050b14;
+    --bg-card: #0a1628;
+    --bg-panel: #0d1f3c;
+    --border-glow: #1a3a6e;
+    --cyan: #00e5ff;
+    --green: #00ff88;
+    --orange: #ff8c00;
+    --red: #ff3d5a;
+    --purple: #b84fff;
+    --yellow: #ffe600;
+    --pink: #ff4da6;
+    --blue: #2979ff;
+    --text-main: #cce8ff;
+    --text-dim: #5a7fa8;
+    --text-bright: #ffffff;
+
+    --type-combination: #00e5ff;
+    --type-decomposition: #ff3d5a;
+    --type-displacement: #ff8c00;
+    --type-double-displacement: #b84fff;
+    --type-combustion: #ff6600;
+    --type-neutralization: #00ff88;
+    --type-precipitation: #2979ff;
+    --type-redox: #ffe600;
+    --type-pharma: #ff4da6;
+    --type-industrial: #00ffcc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    font-family: 'Exo 2', sans-serif;
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(0,80,180,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(0,200,150,0.08) 0%, transparent 60%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: rgba(5,11,20,0.97);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 14px 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(0,80,200,0.15);
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+
+  .logo-icon {
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 8px var(--cyan));
+  }
+
+  .logo-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(0.9rem, 4vw, 1.3rem);
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(0,229,255,0.5);
+  }
+
+  .logo-sub {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+  }
+
+  /* ── SEARCH BOX ── */
+  .search-section {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glow);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(0,80,180,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .search-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 600px) {
+    .search-row {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .search-input {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 14px;
+    }
+    
+    .btn-search {
+      width: 100%;
+      padding: 12px 18px;
+    }
+  }
+
+  .search-input {
+    flex: 1;
+    background: rgba(0,10,30,0.8);
+    border: 1.5px solid var(--border-glow);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--text-bright);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .search-input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.1), 0 0 20px rgba(0,229,255,0.15);
+  }
+
+  .search-input::placeholder { color: var(--text-dim); }
+
+  .btn-search {
+    background: linear-gradient(135deg, #0066cc, #0044aa);
+    border: 1.5px solid var(--cyan);
+    border-radius: 10px;
+    padding: 13px 22px;
+    color: var(--cyan);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    box-shadow: 0 0 15px rgba(0,102,204,0.3);
+  }
+
+  .btn-search:hover {
+    background: linear-gradient(135deg, #0088ff, #0066cc);
+    box-shadow: 0 0 25px rgba(0,180,255,0.4);
+    transform: translateY(-1px);
+  }
+
+  .btn-search:active { transform: scale(0.97); }
+
+  /* Hint tags */
+  .hint-row {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .hint-tag {
+    background: rgba(0,80,180,0.2);
+    border: 1px solid rgba(0,150,255,0.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    color: #88bbff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Exo 2', sans-serif;
+  }
+
+  .hint-tag:hover {
+    background: rgba(0,150,255,0.25);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* ── FILTER TABS ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+    scrollbar-width: none;
+  }
+
+  .filter-bar::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glow);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.72rem;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,150,255,0.1);
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glow);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-chip span { color: var(--cyan); font-weight: 600; }
+
+  /* ── RESULT MESSAGE ── */
+  #resultMsg {
+    text-align: center;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 0.9rem;
+    display: none;
+  }
+
+  #resultMsg.found {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--green);
+    display: block;
+  }
+
+  #resultMsg.notfound {
+    background: rgba(255,61,90,0.08);
+    border: 1px solid rgba(255,61,90,0.3);
+    color: #ff8888;
+    display: block;
+  }
+
+  /* ── REACTION CARDS ── */
+  .cards-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .reaction-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border-glow);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeSlideIn 0.3s ease both;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reaction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,80,200,0.2);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+  }
+
+  .type-badge {
+    min-width: 90px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: 'Orbitron', monospace;
+    flex-shrink: 0;
+    border: 1px solid currentColor;
+    margin-top: 3px;
+  }
+
+  .card-main { flex: 1; min-width: 0; }
+
+  .reaction-equation {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(0.78rem, 3.5vw, 1rem);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    word-break: break-word;
+    letter-spacing: 0.5px;
+  }
+
+  .reaction-name {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+
+  .meta-pill {
+    font-size: 0.65rem;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .meta-exo { background: rgba(255,102,0,0.2); color: #ff9966; border: 1px solid rgba(255,102,0,0.3); }
+  .meta-endo { background: rgba(100,180,255,0.15); color: #88ccff; border: 1px solid rgba(100,180,255,0.3); }
+  .meta-neutral { background: rgba(100,255,180,0.1); color: #77ffbb; border: 1px solid rgba(100,255,180,0.3); }
+  .meta-class { background: rgba(150,100,255,0.15); color: #cc99ff; border: 1px solid rgba(150,100,255,0.3); }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn-speak, .btn-expand {
+    background: none;
+    border: 1px solid var(--border-glow);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    color: var(--text-dim);
+  }
+
+  .btn-speak:hover { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.08); }
+  .btn-expand:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.08); }
+  .btn-speak.speaking { border-color: var(--green); color: var(--green); animation: pulse-green 0.8s infinite; }
+
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+  }
+
+  /* ── DETAILS SECTION ── */
+  .card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+    border-top: 0px solid transparent;
+  }
+
+  .card-details.open {
+    max-height: 600px;
+    border-top: 1px solid var(--border-glow);
+  }
+
+  .details-inner {
+    padding: 16px 18px 20px;
+    background: rgba(0,10,25,0.5);
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .details-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .details-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+
+  .detail-item {
+    background: rgba(0,30,70,0.4);
+    border: 1px solid rgba(0,80,160,0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 70px;
+  }
+
+  .detail-label {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+  }
+
+  .detail-value {
+    font-size: 0.8rem;
+    color: var(--text-bright);
+    font-weight: 500;
+    line-height: 1.3;
+    word-wrap: break-word;
+    flex: 1;
+  }
+
+  .detail-description {
+    background: rgba(0,40,90,0.3);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: var(--text-main);
+    line-height: 1.6;
+  }
+
+  .detail-desc-title {
+    font-size: 0.65rem;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    font-family: 'Orbitron', monospace;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+  .empty-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: #4a6a9a; margin-bottom: 8px; }
+  .empty-sub { font-size: 0.8rem; color: #2a4a7a; }
+
+  /* ── LEGEND ── */
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── TYPE COLORS ── */
+  .type-combination { color: var(--type-combination); }
+  .type-decomposition { color: var(--type-decomposition); }
+  .type-displacement { color: var(--type-displacement); }
+  .type-double { color: var(--type-double-displacement); }
+  .type-combustion { color: var(--type-combustion); }
+  .type-neutralization { color: var(--type-neutralization); }
+  .type-precipitation { color: var(--type-precipitation); }
+  .type-redox { color: var(--type-redox); }
+  .type-pharma { color: var(--type-pharma); }
+  .type-industrial { color: var(--type-industrial); }
+
+  /* Background glow strips */
+  .reaction-card[data-type="Combination"] { border-left: 3px solid var(--type-combination); }
+  .reaction-card[data-type="Decomposition"] { border-left: 3px solid var(--type-decomposition); }
+  .reaction-card[data-type="Displacement"] { border-left: 3px solid var(--type-displacement); }
+  .reaction-card[data-type="Double Displacement"] { border-left: 3px solid var(--type-double-displacement); }
+  .reaction-card[data-type="Combustion"] { border-left: 3px solid var(--type-combustion); }
+  .reaction-card[data-type="Neutralization"] { border-left: 3px solid var(--type-neutralization); }
+  .reaction-card[data-type="Precipitation"] { border-left: 3px solid var(--type-precipitation); }
+  .reaction-card[data-type="Redox"] { border-left: 3px solid var(--type-redox); }
+  .reaction-card[data-type="Pharma"] { border-left: 3px solid var(--type-pharma); }
+  .reaction-card[data-type="Industrial"] { border-left: 3px solid var(--type-industrial); }
+
+  /* ── SCROLL BAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 10px; }
+
+  /* ── COUNTER BADGE ── */
+  .results-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-align: right;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border-glow);
+    margin-top: 30px;
+  }
+
+  footer a { color: var(--cyan); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <span class="logo-icon">⚗️</span>
+    <span class="logo-title">ChemReact Lab</span>
+  </div>
+  <div class="logo-sub">AnkitStudyPoint · Class 10 / 12 / D.Pharmacy</div>
+</header>
+
+<div class="container">
+
+  <!-- Search Box -->
+  <div class="search-section">
+    <span class="search-label">⚡ Enter Reactants to Search</span>
+    <div class="search-row">
+      <input type="text" id="searchInput" class="search-input"
+        placeholder="e.g.  H2 + O2  or  NaOH + HCl  or  hydrogen"
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="btn-search" onclick="searchReaction()">SEARCH</button>
+    </div>
+    <div class="hint-row" id="hintRow">
+      <span class="hint-tag" onclick="quickSearch('H2 + O2')">H₂ + O₂</span>
+      <span class="hint-tag" onclick="quickSearch('NaOH + HCl')">NaOH + HCl</span>
+      <span class="hint-tag" onclick="quickSearch('NaHCO3 + HCl')">NaHCO₃ + HCl</span>
+      <span class="hint-tag" onclick="quickSearch('Fe + CuSO4')">Fe + CuSO₄</span>
+      <span class="hint-tag" onclick="quickSearch('Zn + H2SO4')">Zn + H₂SO₄</span>
+      <span class="hint-tag" onclick="quickSearch('N2 + H2')">N₂ + H₂</span>
+      <span class="hint-tag" onclick="quickSearch('CaCO3')">CaCO₃ heat</span>
+      <span class="hint-tag" onclick="quickSearch('KMnO4')">KMnO₄</span>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="filterBy('all', this)">All</button>
+    <button class="filter-btn" onclick="filterBy('Class 10', this)">Class 10</button>
+    <button class="filter-btn" onclick="filterBy('Class 12', this)">Class 12</button>
+    <button class="filter-btn" onclick="filterBy('D.Pharmacy', this)">D.Pharmacy</button>
+    <button class="filter-btn" onclick="filterBy('Combination', this)">Combination</button>
+    <button class="filter-btn" onclick="filterBy('Decomposition', this)">Decomposition</button>
+    <button class="filter-btn" onclick="filterBy('Displacement', this)">Displacement</button>
+    <button class="filter-btn" onclick="filterBy('Neutralization', this)">Neutralization</button>
+    <button class="filter-btn" onclick="filterBy('Precipitation', this)">Precipitation</button>
+    <button class="filter-btn" onclick="filterBy('Combustion', this)">Combustion</button>
+    <button class="filter-btn" onclick="filterBy('Redox', this)">Redox</button>
+    <button class="filter-btn" onclick="filterBy('Industrial', this)">Industrial</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-chip">Total Reactions: <span id="totalCount">0</span></div>
+    <div class="stat-chip">Showing: <span id="showingCount">0</span></div>
+  </div>
+
+  <!-- Result Message -->
+  <div id="resultMsg"></div>
+
+  <!-- Cards -->
+  <div id="resultsCount" class="results-count"></div>
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <!-- Legend -->
+  <div class="legend-row" style="margin-top:24px;">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-combination)"></div>Combination</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-decomposition)"></div>Decomposition</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-displacement)"></div>Displacement</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-double-displacement)"></div>Double Displacement</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-neutralization)"></div>Neutralization</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-precipitation)"></div>Precipitation</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-combustion)"></div>Combustion</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-redox)"></div>Redox</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-pharma)"></div>Pharma</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--type-industrial)"></div>Industrial</div>
+  </div>
+
+</div>
+
+<footer>
+  Made with 💙 by <a href="https://ankitstudypoint.blogspot.com" target="_blank">AnkitStudyPoint</a> &nbsp;|&nbsp;
+  <a href="https://www.youtube.com/@rxvibeak" target="_blank">@rxvibeak</a> YouTube
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+//  REACTION DATABASE
+// ─────────────────────────────────────────────
+const REACTIONS = [
+
+  // ════════ CLASS 10 ════════
+  {
+    id: 1,
+    name: "Formation of Water",
+    equation: "2H₂ + O₂ → 2H₂O",
+    reactants: ["h2","o2","hydrogen","oxygen"],
+    type: "Combination", energy: "Exothermic", level: "Class 10",
+    product: "Water (H₂O)",
+    color_hint: "Colourless liquid formed. Blue litmus turns red if test done.",
+    speak: "2 molecules of hydrogen reacts with 1 molecule of oxygen to form 2 molecules of water. This is a combination and exothermic reaction.",
+    details: "Hydrogen gas burns in oxygen to produce water. This reaction releases a large amount of heat and light. It is used in rocket fuel. In daily life, this reaction powers hydrogen fuel cells.",
+    conditions: "Spark or flame required",
+    state: "H₂(g) + O₂(g) → H₂O(l)",
+    observation: "Colourless water formed, heat and light released"
+  },
+  {
+    id: 2,
+    name: "Burning of Carbon (Combustion)",
+    equation: "C + O₂ → CO₂",
+    reactants: ["c","o2","carbon","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Carbon Dioxide (CO₂)",
+    color_hint: "Colourless CO₂ gas. Turns lime water milky.",
+    speak: "Carbon reacts with oxygen to form carbon dioxide. This is a combustion reaction and releases heat.",
+    details: "When carbon (coal, charcoal) burns in oxygen, carbon dioxide gas is produced. This is the basis of burning fuels. CO₂ turns lime water milky which is a confirmation test.",
+    conditions: "High temperature required",
+    state: "C(s) + O₂(g) → CO₂(g)",
+    observation: "Colourless CO₂ gas produced, lime water turns milky"
+  },
+  {
+    id: 3,
+    name: "Slaked Lime Formation",
+    equation: "CaO + H₂O → Ca(OH)₂",
+    reactants: ["cao","h2o","quicklime","calcium oxide","water"],
+    type: "Combination", energy: "Exothermic", level: "Class 10",
+    product: "Calcium Hydroxide / Slaked Lime",
+    color_hint: "White solid / suspension formed. Strong heat released.",
+    speak: "Calcium oxide, also called quick lime, reacts with water to form calcium hydroxide, which is slaked lime. This is an exothermic reaction.",
+    details: "Quick lime (CaO) reacts vigorously with water releasing a large amount of heat. The product Ca(OH)₂ is called slaked lime or 'bujha hua chuna'. It is used in white-washing walls.",
+    conditions: "Room temperature, exothermic - container becomes hot",
+    state: "CaO(s) + H₂O(l) → Ca(OH)₂(aq)",
+    observation: "White suspension formed, container becomes very hot"
+  },
+  {
+    id: 4,
+    name: "Electrolysis of Water",
+    equation: "2H₂O → 2H₂ + O₂",
+    reactants: ["h2o","water","electrolysis"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Hydrogen (H₂) + Oxygen (O₂)",
+    color_hint: "Both gases are colourless. H₂ volume is double that of O₂.",
+    speak: "Water decomposes on passing electric current to give hydrogen and oxygen gases. This is an electrolytic decomposition reaction.",
+    details: "Water is broken down by passing electric current. Hydrogen collects at cathode (negative electrode) and oxygen at anode (positive electrode). Volume of H₂ is always double that of O₂.",
+    conditions: "Electric current + dilute H₂SO₄ as electrolyte",
+    state: "H₂O(l) → H₂(g) + O₂(g)",
+    observation: "Bubbles at both electrodes; H₂ volume = 2× O₂ volume"
+  },
+  {
+    id: 5,
+    name: "Decomposition of Potassium Chlorate",
+    equation: "2KClO₃ → 2KCl + 3O₂↑",
+    reactants: ["kclo3","potassium chlorate"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Potassium Chloride + Oxygen",
+    color_hint: "White KCl solid + colourless O₂ gas (supports combustion).",
+    speak: "Potassium chlorate on heating with manganese dioxide catalyst decomposes to give potassium chloride and oxygen gas.",
+    details: "KClO₃ decomposes on heating in presence of MnO₂ (catalyst) to give KCl and O₂. This is a laboratory method to prepare oxygen gas. MnO₂ increases the rate but is not consumed.",
+    conditions: "Heat + MnO₂ as catalyst",
+    state: "KClO₃(s) → KCl(s) + O₂(g)",
+    observation: "White solid remains, oxygen gas relights glowing splint"
+  },
+  {
+    id: 6,
+    name: "Photodecomposition of Silver Bromide",
+    equation: "2AgBr → 2Ag + Br₂",
+    reactants: ["agbr","silver bromide","light"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Silver (Ag) + Bromine (Br₂)",
+    color_hint: "Pale yellow AgBr turns grey/black (Ag formed). Used in photography.",
+    speak: "Silver bromide decomposes in sunlight to give silver metal and bromine gas. This is a photochemical decomposition reaction used in photography.",
+    details: "AgBr is pale yellow. On exposure to sunlight, it decomposes. Silver (grey-black) deposits are formed. This reaction is the basis of black-and-white photography and blueprint paper.",
+    conditions: "Sunlight (photochemical)",
+    state: "AgBr(s) → Ag(s) + Br₂(g)",
+    observation: "Pale yellow AgBr turns grey-black due to Ag deposition"
+  },
+  {
+    id: 7,
+    name: "Iron + Copper Sulphate (Displacement)",
+    equation: "Fe + CuSO₄ → FeSO₄ + Cu",
+    reactants: ["fe","cuso4","iron","copper sulphate"],
+    type: "Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Ferrous Sulphate (FeSO₄) + Copper",
+    color_hint: "Blue CuSO₄ solution turns pale green (FeSO₄). Reddish Cu deposits on iron.",
+    speak: "Iron displaces copper from copper sulphate solution. The blue solution turns green and copper deposits on the iron nail.",
+    details: "Iron is more reactive than copper in the reactivity series. It displaces copper from CuSO₄ solution. Blue colour fades and reddish-brown copper deposits on iron nail. This proves reactivity series.",
+    conditions: "Room temperature, aqueous solution",
+    state: "Fe(s) + CuSO₄(aq) → FeSO₄(aq) + Cu(s)",
+    observation: "Blue solution → pale green; reddish Cu deposits on iron"
+  },
+  {
+    id: 8,
+    name: "Zinc + Dilute Sulphuric Acid",
+    equation: "Zn + H₂SO₄ → ZnSO₄ + H₂↑",
+    reactants: ["zn","h2so4","zinc","sulphuric acid","h2so4 dilute"],
+    type: "Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Zinc Sulphate + Hydrogen Gas",
+    color_hint: "Colourless solution + hydrogen gas (burns with pop sound).",
+    speak: "Zinc reacts with dilute sulphuric acid to form zinc sulphate and hydrogen gas. The hydrogen gas burns with a pop sound.",
+    details: "Zinc metal dissolves in dilute H₂SO₄ releasing H₂ gas. A burning splint near the mouth of the tube makes a 'pop' sound, confirming H₂. This is a standard lab test for H₂ gas.",
+    conditions: "Dilute H₂SO₄, room temperature",
+    state: "Zn(s) + H₂SO₄(aq) → ZnSO₄(aq) + H₂(g)",
+    observation: "Zinc dissolves, colourless H₂ gas evolved (pop sound)"
+  },
+  {
+    id: 9,
+    name: "Magnesium + Hydrochloric Acid",
+    equation: "Mg + 2HCl → MgCl₂ + H₂↑",
+    reactants: ["mg","hcl","magnesium","hydrochloric acid"],
+    type: "Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Magnesium Chloride + Hydrogen",
+    color_hint: "Vigorous reaction. Colourless H₂ gas with white MgCl₂ solution.",
+    speak: "Magnesium reacts vigorously with hydrochloric acid to form magnesium chloride and hydrogen gas.",
+    details: "Mg reacts vigorously with HCl. The reaction is more vigorous than Zn + HCl because Mg is more reactive than Zn. Magnesium ribbon burns with brilliant white light in air.",
+    conditions: "Dilute HCl, room temperature",
+    state: "Mg(s) + HCl(aq) → MgCl₂(aq) + H₂(g)",
+    observation: "Vigorous fizzing, H₂ gas evolved, solution turns colourless"
+  },
+  {
+    id: 10,
+    name: "Neutralization – NaOH + HCl",
+    equation: "NaOH + HCl → NaCl + H₂O",
+    reactants: ["naoh","hcl","sodium hydroxide","hydrochloric acid"],
+    type: "Neutralization", energy: "Exothermic", level: "Class 10",
+    product: "Sodium Chloride (Common Salt) + Water",
+    color_hint: "Colourless solution. pH = 7 at neutralization. Phenolphthalein turns colourless.",
+    speak: "Sodium hydroxide reacts with hydrochloric acid to form sodium chloride and water. This is a neutralization reaction.",
+    details: "Strong base + strong acid = salt + water. This is a neutralization reaction. Phenolphthalein indicator turns from pink (NaOH) to colourless at endpoint. NaCl is common table salt.",
+    conditions: "Room temperature, aqueous",
+    state: "NaOH(aq) + HCl(aq) → NaCl(aq) + H₂O(l)",
+    observation: "Pink colour (phenolphthalein) disappears at equivalence point"
+  },
+  {
+    id: 11,
+    name: "Precipitation – Sodium Carbonate + Calcium Chloride",
+    equation: "Na₂CO₃ + CaCl₂ → CaCO₃↓ + 2NaCl",
+    reactants: ["na2co3","cacl2","sodium carbonate","calcium chloride"],
+    type: "Precipitation", energy: "Neutral", level: "Class 10",
+    product: "Calcium Carbonate (white precipitate) + NaCl",
+    color_hint: "White precipitate of CaCO₃ formed immediately.",
+    speak: "Sodium carbonate reacts with calcium chloride to form a white precipitate of calcium carbonate and sodium chloride solution.",
+    details: "CaCO₃ is insoluble in water and forms as a white precipitate. NaCl stays in solution. This is a double displacement + precipitation reaction. CaCO₃ is also called limestone/marble.",
+    conditions: "Aqueous solutions mixed",
+    state: "Na₂CO₃(aq) + CaCl₂(aq) → CaCO₃(s)↓ + NaCl(aq)",
+    observation: "White precipitate forms immediately on mixing"
+  },
+  {
+    id: 12,
+    name: "Barium Chloride + Sodium Sulphate",
+    equation: "BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl",
+    reactants: ["bacl2","na2so4","barium chloride","sodium sulphate"],
+    type: "Precipitation", energy: "Neutral", level: "Class 10",
+    product: "Barium Sulphate (white ppt) + Sodium Chloride",
+    color_hint: "White precipitate of BaSO₄. Insoluble in dilute HCl - confirmatory test.",
+    speak: "Barium chloride reacts with sodium sulphate to form a white precipitate of barium sulphate which is insoluble even in dilute hydrochloric acid.",
+    details: "BaSO₄ is a dense white precipitate insoluble in dilute HCl. This reaction is used in limit test for sulphates in D.Pharmacy. Also used in X-ray imaging (barium meal).",
+    conditions: "Aqueous solutions",
+    state: "BaCl₂(aq) + Na₂SO₄(aq) → BaSO₄(s)↓ + NaCl(aq)",
+    observation: "Dense white precipitate, insoluble in dilute HCl"
+  },
+  {
+    id: 13,
+    name: "Copper + Oxygen (Oxidation of Copper)",
+    equation: "2Cu + O₂ → 2CuO",
+    reactants: ["cu","o2","copper","oxygen"],
+    type: "Redox", energy: "Exothermic", level: "Class 10",
+    product: "Copper Oxide (CuO) – Black",
+    color_hint: "Reddish-brown copper turns BLACK (CuO) on heating.",
+    speak: "Copper reacts with oxygen on heating to form copper oxide. The reddish brown copper turns black due to formation of copper oxide.",
+    details: "When copper powder is heated in air, its shiny reddish-brown surface becomes coated with black CuO. This is oxidation of copper. CuO can be reduced back to Cu by passing H₂.",
+    conditions: "Heating in air/oxygen",
+    state: "Cu(s) + O₂(g) → CuO(s)",
+    observation: "Shiny reddish-brown copper turns dull BLACK"
+  },
+  {
+    id: 14,
+    name: "Reduction of Copper Oxide",
+    equation: "CuO + H₂ → Cu + H₂O",
+    reactants: ["cuo","h2","copper oxide","hydrogen"],
+    type: "Redox", energy: "Exothermic", level: "Class 10",
+    product: "Copper (Cu) + Water",
+    color_hint: "Black CuO turns reddish-brown (Cu) when H₂ passed. Water droplets on cool surface.",
+    speak: "Copper oxide is reduced by hydrogen to form copper metal and water. Black copper oxide turns reddish brown.",
+    details: "H₂ removes oxygen from CuO (reduction). CuO is oxidized and H₂ is the reducing agent. Black colour changes to reddish-brown. This is a redox reaction - both oxidation and reduction occur.",
+    conditions: "Heat + H₂ gas flow",
+    state: "CuO(s) + H₂(g) → Cu(s) + H₂O(g)",
+    observation: "Black CuO → reddish-brown Cu; water vapour condenses"
+  },
+  {
+    id: 15,
+    name: "Decomposition of Calcium Carbonate (Limestone)",
+    equation: "CaCO₃ → CaO + CO₂↑",
+    reactants: ["caco3","calcium carbonate","limestone","marble"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Quick Lime (CaO) + Carbon Dioxide",
+    color_hint: "White limestone → white CaO + colourless CO₂ gas (turns lime water milky).",
+    speak: "Calcium carbonate decomposes on strong heating to form calcium oxide and carbon dioxide gas. This is a thermal decomposition reaction.",
+    details: "This reaction is used in the industrial manufacture of cement and quick lime. CaCO₃ (limestone/marble) requires very high temperature (~840°C) to decompose. CO₂ can be tested with lime water.",
+    conditions: "Very high temperature (~840°C)",
+    state: "CaCO₃(s) → CaO(s) + CO₂(g)",
+    observation: "White solid CaO formed; CO₂ gas turns lime water milky"
+  },
+
+  // ════════ CLASS 12 ════════
+  {
+    id: 16,
+    name: "Haber Process – Ammonia Synthesis",
+    equation: "N₂ + 3H₂ ⇌ 2NH₃",
+    reactants: ["n2","h2","nitrogen","hydrogen","haber"],
+    type: "Industrial", energy: "Exothermic", level: "Class 12",
+    product: "Ammonia (NH₃)",
+    color_hint: "NH₃ is a colourless gas with pungent smell. Turns moist red litmus blue.",
+    speak: "Nitrogen and hydrogen react in 1 to 3 ratio to form ammonia. This is the Haber process. The reaction is reversible, exothermic, done at 450 degrees C and 200 atm pressure with iron catalyst.",
+    details: "Haber Process conditions: Temperature 450°C, Pressure 200 atm, Iron catalyst (Fe) with promoters (K₂O, Al₂O₃). Reversible reaction - Le Chatelier's principle applied. Ammonia used to make fertilizers (urea, ammonium nitrate).",
+    conditions: "450°C, 200 atm, Fe catalyst",
+    state: "N₂(g) + H₂(g) ⇌ NH₃(g)",
+    observation: "Colourless NH₃ gas, pungent smell, turns moist red litmus blue"
+  },
+  {
+    id: 17,
+    name: "Contact Process – SO₂ to SO₃",
+    equation: "2SO₂ + O₂ ⇌ 2SO₃",
+    reactants: ["so2","o2","sulphur dioxide","oxygen","contact process"],
+    type: "Industrial", energy: "Exothermic", level: "Class 12",
+    product: "Sulphur Trioxide (SO₃)",
+    color_hint: "SO₃ is colourless fuming gas. Reacts violently with water to give H₂SO₄.",
+    speak: "In the contact process, sulphur dioxide reacts with oxygen to form sulphur trioxide. This uses vanadium pentoxide as catalyst at 450 degrees C.",
+    details: "Contact Process for H₂SO₄ manufacture. SO₃ + H₂O → H₂SO₄. Catalyst: V₂O₅ at 450°C. SO₃ is absorbed in oleum (H₂SO₄) to avoid acid mist. Sulphuric acid is the most produced industrial chemical.",
+    conditions: "450°C, V₂O₅ catalyst, 1-2 atm",
+    state: "SO₂(g) + O₂(g) ⇌ SO₃(g)",
+    observation: "SO₃ forms colourless fumes, dissolves in water/oleum"
+  },
+  {
+    id: 18,
+    name: "Esterification – Acetic Acid + Ethanol",
+    equation: "CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O",
+    reactants: ["ch3cooh","c2h5oh","acetic acid","ethanol","ethyl acetate","esterification"],
+    type: "Double Displacement", energy: "Neutral", level: "Class 12",
+    product: "Ethyl Acetate (CH₃COOC₂H₅) + Water",
+    color_hint: "Ethyl acetate has sweet fruity smell. Used as solvent in perfumes, nail polish remover.",
+    speak: "Acetic acid reacts with ethanol in presence of concentrated sulphuric acid to form ethyl acetate ester and water. This reaction is called esterification.",
+    details: "Esterification: carboxylic acid + alcohol → ester + water. Catalyst: conc. H₂SO₄. Reversible reaction. Ethyl acetate (fruity smell) used in perfumes. Reverse reaction = saponification (ester + NaOH → soap).",
+    conditions: "Conc. H₂SO₄ catalyst, heat",
+    state: "CH₃COOH(l) + C₂H₅OH(l) ⇌ CH₃COOC₂H₅(l) + H₂O",
+    observation: "Sweet fruity smell of ethyl acetate ester"
+  },
+  {
+    id: 19,
+    name: "Dehydration of Ethanol",
+    equation: "C₂H₅OH → C₂H₄ + H₂O",
+    reactants: ["c2h5oh","ethanol","dehydration","ethylene"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 12",
+    product: "Ethylene (C₂H₄) + Water",
+    color_hint: "Ethylene is colourless gas. Decolourises bromine water.",
+    speak: "Ethanol is dehydrated using concentrated sulphuric acid at 443 K to give ethylene gas and water.",
+    details: "Ethanol heated with excess conc. H₂SO₄ at 443 K (170°C) gives ethene. H₂SO₄ acts as dehydrating agent. Ethene decolorizes bromine water (test for alkene). Lower temperature (413K/140°C) with less H₂SO₄ gives diethyl ether.",
+    conditions: "Conc. H₂SO₄, 443 K (170°C)",
+    state: "C₂H₅OH(l) → C₂H₄(g) + H₂O(g)",
+    observation: "Colourless gas evolved, decolorises bromine water"
+  },
+  {
+    id: 20,
+    name: "Sodium + Water",
+    equation: "2Na + 2H₂O → 2NaOH + H₂↑",
+    reactants: ["na","h2o","sodium","water"],
+    type: "Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Sodium Hydroxide + Hydrogen",
+    color_hint: "Vigorous reaction. Sodium floats and melts. H₂ may catch fire (yellow flame due to Na).",
+    speak: "Sodium metal reacts vigorously with water to form sodium hydroxide and hydrogen gas. The reaction is highly exothermic.",
+    details: "Na reacts vigorously with water releasing H₂. The heat generated can ignite H₂ (yellow flame from Na). NaOH solution turns phenolphthalein pink. K reacts even more vigorously than Na (lilac/violet flame).",
+    conditions: "Room temperature, water",
+    state: "Na(s) + H₂O(l) → NaOH(aq) + H₂(g)",
+    observation: "Na floats + moves + melts; H₂ burns with yellow flame"
+  },
+  {
+    id: 21,
+    name: "Reduction of Iron Ore (Blast Furnace)",
+    equation: "Fe₂O₃ + 3CO → 2Fe + 3CO₂",
+    reactants: ["fe2o3","co","iron ore","carbon monoxide","blast furnace"],
+    type: "Redox", energy: "Exothermic", level: "Class 12",
+    product: "Iron (Fe) + Carbon Dioxide",
+    color_hint: "Grey-black molten iron. CO₂ goes as waste gas. Iron extracted from ore.",
+    speak: "Iron oxide reacts with carbon monoxide in the blast furnace to give iron metal and carbon dioxide. This is used for extraction of iron.",
+    details: "In a blast furnace, iron ore (Fe₂O₃) is reduced by CO (from coke). Molten iron sinks to bottom. Slag (CaSiO₃) floats. Temperature ~1500°C. CO acts as reducing agent. Iron produced is pig iron.",
+    conditions: "Blast furnace, ~1500°C",
+    state: "Fe₂O₃(s) + CO(g) → Fe(l) + CO₂(g)",
+    observation: "Molten iron sinks to bottom of furnace"
+  },
+  {
+    id: 22,
+    name: "Ostwald Process – Ammonia Oxidation",
+    equation: "4NH₃ + 5O₂ → 4NO + 6H₂O",
+    reactants: ["nh3","o2","ammonia","oxygen","ostwald","nitric acid"],
+    type: "Industrial", energy: "Exothermic", level: "Class 12",
+    product: "Nitric Oxide (NO) + Water",
+    color_hint: "NO is colourless. Turns brown (NO₂) in air. Used to make HNO₃.",
+    speak: "In the Ostwald process, ammonia reacts with oxygen over platinum catalyst to form nitric oxide and water, which is then used to make nitric acid.",
+    details: "Ostwald Process for HNO₃: NH₃ → NO → NO₂ → HNO₃. Catalyst: Pt-Rh gauze at 800-900°C. NO + O₂ → NO₂, then NO₂ + H₂O → HNO₃. Used in fertilizer and explosives industry.",
+    conditions: "800-900°C, Pt-Rh catalyst",
+    state: "NH₃(g) + O₂(g) → NO(g) + H₂O(g)",
+    observation: "Colourless NO formed, turns reddish-brown in air (NO₂)"
+  },
+  {
+    id: 23,
+    name: "Silver Displacement by Copper",
+    equation: "2AgNO₃ + Cu → Cu(NO₃)₂ + 2Ag",
+    reactants: ["agno3","cu","silver nitrate","copper","silver"],
+    type: "Displacement", energy: "Neutral", level: "Class 12",
+    product: "Copper Nitrate + Silver",
+    color_hint: "Colourless AgNO₃ solution turns blue (Cu(NO₃)₂). Shiny silver deposits on copper.",
+    speak: "Copper displaces silver from silver nitrate solution. Shiny silver deposits on copper wire and the solution turns blue.",
+    details: "Copper is more reactive than silver in the reactivity/activity series. Colourless AgNO₃ solution turns blue as Cu²⁺ is formed. Shiny silver crystals deposit on the copper wire. Classic demonstration of activity series.",
+    conditions: "Room temperature, aqueous solution",
+    state: "AgNO₃(aq) + Cu(s) → Cu(NO₃)₂(aq) + Ag(s)",
+    observation: "Solution turns blue (Cu²⁺); shiny silver deposits on copper"
+  },
+
+  // ════════ D.PHARMACY ════════
+  {
+    id: 24,
+    name: "Antacid – Sodium Bicarbonate + HCl",
+    equation: "NaHCO₃ + HCl → NaCl + H₂O + CO₂↑",
+    reactants: ["nahco3","hcl","sodium bicarbonate","hydrochloric acid","baking soda","antacid"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "NaCl + Water + CO₂ gas (causes burping relief)",
+    color_hint: "Effervescence (CO₂ gas bubbles). Brisk fizzing when NaHCO₃ + acid.",
+    speak: "Sodium bicarbonate, used as antacid, reacts with hydrochloric acid in stomach to form sodium chloride, water, and carbon dioxide gas. This neutralizes excess stomach acid.",
+    details: "NaHCO₃ (baking soda / Sodabicarb) is used as antacid to neutralize excess HCl in stomach. CO₂ gas causes belching (burping). Quick acting but causes acid rebound. Used in ENO salt and antacid powders.",
+    conditions: "Aqueous / stomach acid",
+    state: "NaHCO₃(aq) + HCl(aq) → NaCl + H₂O + CO₂(g)",
+    observation: "Brisk effervescence (CO₂ bubbles), fizzing sound"
+  },
+  {
+    id: 25,
+    name: "Antacid – Magnesium Hydroxide + HCl",
+    equation: "Mg(OH)₂ + 2HCl → MgCl₂ + 2H₂O",
+    reactants: ["mg(oh)2","hcl","magnesium hydroxide","hydrochloric acid","milk of magnesia"],
+    type: "Pharma", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Magnesium Chloride + Water",
+    color_hint: "White Mg(OH)₂ suspension dissolves. Solution becomes clear on neutralization.",
+    speak: "Magnesium hydroxide, sold as milk of magnesia, reacts with hydrochloric acid to form magnesium chloride and water. Used as antacid and laxative.",
+    details: "Mg(OH)₂ (Milk of Magnesia) is a slow-acting antacid. It also acts as laxative in higher doses. No CO₂ released (no belching). Long-acting antacid. Used in Gelusil, Digene preparations.",
+    conditions: "Stomach acid (pH ~2)",
+    state: "Mg(OH)₂(s) + HCl(aq) → MgCl₂(aq) + H₂O(l)",
+    observation: "White suspension clears, no gas evolution"
+  },
+  {
+    id: 26,
+    name: "Antacid – Aluminium Hydroxide + HCl",
+    equation: "Al(OH)₃ + 3HCl → AlCl₃ + 3H₂O",
+    reactants: ["al(oh)3","hcl","aluminium hydroxide","hydrochloric acid","gelusil"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Aluminium Chloride + Water",
+    color_hint: "White gel/suspension dissolves in acid. Causes constipation (side effect).",
+    speak: "Aluminium hydroxide reacts with hydrochloric acid to form aluminium chloride and water. Used as antacid in preparations like Digene and Gelusil.",
+    details: "Al(OH)₃ gel (aluminium hydroxide) is a slow-acting antacid. Causes constipation as side effect. Often combined with Mg(OH)₂ to counteract - Mg(OH)₂ causes diarrhea and Al(OH)₃ causes constipation, so they balance each other. Example: Gelusil, Digene.",
+    conditions: "Stomach acid",
+    state: "Al(OH)₃(s) + HCl(aq) → AlCl₃(aq) + H₂O(l)",
+    observation: "White gel dissolves, no gas - slow and sustained action"
+  },
+  {
+    id: 27,
+    name: "Antacid – Calcium Carbonate + HCl",
+    equation: "CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑",
+    reactants: ["caco3","hcl","calcium carbonate","hydrochloric acid","chalk","tums"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Calcium Chloride + Water + CO₂",
+    color_hint: "Effervescence (CO₂). White CaCO₃ dissolves in acid.",
+    speak: "Calcium carbonate reacts with hydrochloric acid to form calcium chloride, water and carbon dioxide. Used as antacid in Tums and calcium supplements.",
+    details: "CaCO₃ used as antacid (Tums, calcium supplements). Provides calcium supplementation along with antacid effect. May cause acid rebound (rebound hyperacidity) due to CO₂. Also used as excipient in tablet manufacturing.",
+    conditions: "Aqueous HCl (stomach acid)",
+    state: "CaCO₃(s) + HCl(aq) → CaCl₂(aq) + H₂O + CO₂(g)",
+    observation: "Effervescence, white solid dissolves"
+  },
+  {
+    id: 28,
+    name: "H₂O₂ Decomposition (Antiseptic Action)",
+    equation: "2H₂O₂ → 2H₂O + O₂↑",
+    reactants: ["h2o2","hydrogen peroxide"],
+    type: "Pharma", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Water + Nascent Oxygen [O] (antiseptic)",
+    color_hint: "Effervescence on wound (O₂ bubbles). Colourless solution. Turns hair blonde.",
+    speak: "Hydrogen peroxide decomposes to give water and nascent oxygen. The nascent oxygen kills bacteria making it a good antiseptic for wounds.",
+    details: "H₂O₂ (3% = 10 volume) releases nascent oxygen [O] which has strong oxidizing power, killing bacteria and viruses. Used as antiseptic on wounds, teeth whitening, and hair bleaching. Decomposition is faster in alkaline conditions, light and by MnO₂.",
+    conditions: "Light, alkaline pH, MnO₂ accelerates",
+    state: "H₂O₂(aq) → H₂O + [O]",
+    observation: "Brisk effervescence on wound surface, whitening effect"
+  },
+  {
+    id: 29,
+    name: "Limit Test – Chloride (AgNO₃ Test)",
+    equation: "AgNO₃ + NaCl → AgCl↓ + NaNO₃",
+    reactants: ["agno3","nacl","silver nitrate","chloride","limit test chloride"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Silver Chloride (white precipitate)",
+    color_hint: "WHITE precipitate of AgCl. Curdy white ppt. Insoluble in HNO₃, soluble in NH₃.",
+    speak: "Silver nitrate reacts with sodium chloride to form a white curdy precipitate of silver chloride. This is the limit test for chlorides in pharmaceutical analysis.",
+    details: "IP Limit Test for Chlorides: Add AgNO₃ to sample + dilute HNO₃. White curdy precipitate = AgCl. Compare opalescence with standard. Curdy white ppt of AgCl is insoluble in dilute HNO₃ but soluble in NH₃ solution.",
+    conditions: "Add dilute HNO₃ + AgNO₃ solution",
+    state: "AgNO₃(aq) + Cl⁻(aq) → AgCl(s)↓ + NO₃⁻",
+    observation: "White curdy precipitate of AgCl formed instantly"
+  },
+  {
+    id: 30,
+    name: "Limit Test – Sulphate (BaCl₂ Test)",
+    equation: "BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl",
+    reactants: ["bacl2","na2so4","barium chloride","sulphate","limit test sulphate"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Barium Sulphate (white precipitate)",
+    color_hint: "WHITE precipitate of BaSO₄. Dense, heavy white ppt. Insoluble in dilute HCl.",
+    speak: "Barium chloride reacts with sulphate ions to form a white precipitate of barium sulphate. This is used as the limit test for sulphates in Indian Pharmacopoeia.",
+    details: "IP Limit Test for Sulphates: Add BaCl₂ to sample + dilute HCl. BaSO₄ white ppt insoluble in dilute HCl (unlike BaCO₃). Compare turbidity with standard (0.1 mg SO₄). Used to check sulphate impurities in NaCl, glucose etc.",
+    conditions: "Add dilute HCl + BaCl₂ solution",
+    state: "Ba²⁺(aq) + SO₄²⁻(aq) → BaSO₄(s)↓",
+    observation: "White precipitate, insoluble in dilute HCl"
+  },
+  {
+    id: 31,
+    name: "Limit Test – Iron (Thiocyanate Test)",
+    equation: "FeCl₃ + 3NH₄SCN → Fe(SCN)₃ + 3NH₄Cl",
+    reactants: ["fecl3","nh4scn","iron","ferric","thiocyanate","limit test iron"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Ferric Thiocyanate (blood red colour)",
+    color_hint: "BLOOD RED colour with ammonium thiocyanate. Highly sensitive test. Even trace Fe³⁺ turns red.",
+    speak: "Ferric ions react with ammonium thiocyanate to form ferric thiocyanate which gives a blood red colour. This is the limit test for iron in Indian Pharmacopoeia.",
+    details: "IP Limit Test for Iron: Add thioglycollic acid (or NH₄SCN) to sample. Blood red colour = Fe³⁺ present. Compare with 2 ppm Fe standard. Very sensitive - detects 0.1 mg Fe. Used to check iron impurities in pharmaceutical salts.",
+    conditions: "Add dilute HCl, then NH₄SCN",
+    state: "Fe³⁺(aq) + SCN⁻(aq) → [Fe(SCN)]²⁺ blood red",
+    observation: "Blood red colour with ammonium thiocyanate"
+  },
+  {
+    id: 32,
+    name: "Potassium Permanganate (Antiseptic)",
+    equation: "2KMnO₄ + H₂O → 2KOH + 2MnO₂ + 3[O]",
+    reactants: ["kmno4","potassium permanganate","h2o","water"],
+    type: "Pharma", energy: "Exothermic", level: "D.Pharmacy",
+    product: "KOH + MnO₂ (brown) + Nascent Oxygen [O]",
+    color_hint: "Purple KMnO₄ → Brown MnO₂. Brown staining on skin. 1:1000 dilution for antiseptic use.",
+    speak: "Potassium permanganate releases nascent oxygen in presence of water. This nascent oxygen kills bacteria, making it a strong oxidising antiseptic and disinfectant.",
+    details: "KMnO₄ (Condy's crystals) is a strong oxidising agent and antiseptic. Deep violet/purple solution. Used as 0.1% solution for wound washing, gargling, and skin infection. Brown MnO₂ stains skin. Deodorizes and disinfects.",
+    conditions: "Dilute aqueous solution",
+    state: "KMnO₄(aq) + H₂O → KOH + MnO₂↓ + [O]",
+    observation: "Purple → brown (MnO₂); skin staining, strong oxidizing"
+  },
+  {
+    id: 33,
+    name: "Boric Acid Reaction with NaOH",
+    equation: "H₃BO₃ + NaOH → NaBO₂ + 2H₂O",
+    reactants: ["h3bo3","naoh","boric acid","sodium hydroxide"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Sodium Metaborate + Water",
+    color_hint: "Boric acid is weakly acidic. Reacts with strong bases. Weak acid – 1 equivalent per mole.",
+    speak: "Boric acid reacts with sodium hydroxide to form sodium metaborate and water. Boric acid is a weak acid used as antiseptic in eye drops.",
+    details: "Boric acid (H₃BO₃) is a weak monobasic acid. Used as mild antiseptic eyewash (1.9% solution isotonic with tears), skin antiseptic. Borax (Na₂B₄O₇) is its sodium salt. Assay by alkalimetry using mannitol.",
+    conditions: "Aqueous, neutralization",
+    state: "H₃BO₃(aq) + NaOH(aq) → NaBO₂(aq) + H₂O(l)",
+    observation: "Colourless solution, mild reaction"
+  },
+  {
+    id: 34,
+    name: "Ammonium Chloride Preparation",
+    equation: "NH₃ + HCl → NH₄Cl",
+    reactants: ["nh3","hcl","ammonia","hydrochloric acid","ammonium chloride"],
+    type: "Combination", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ammonium Chloride (NH₄Cl) – White fumes",
+    color_hint: "Dense WHITE FUMES when HCl and NH₃ gases meet. White solid NH₄Cl formed.",
+    speak: "Ammonia gas reacts with hydrogen chloride gas to form ammonium chloride. Dense white fumes are formed which is a test for both gases.",
+    details: "Dense white fumes of NH₄Cl confirm both NH₃ and HCl. NH₄Cl used as expectorant (increases respiratory secretions, helps cough up phlegm). Also used as electrolyte in dry cells. IP: White crystalline powder, freely soluble in water.",
+    conditions: "Gas phase, room temperature",
+    state: "NH₃(g) + HCl(g) → NH₄Cl(s)",
+    observation: "Dense white fumes of NH₄Cl formed"
+  },
+  {
+    id: 35,
+    name: "Ferrous Sulphate Formation",
+    equation: "Fe + H₂SO₄ → FeSO₄ + H₂↑",
+    reactants: ["fe","h2so4","iron","sulphuric acid","ferrous sulphate"],
+    type: "Displacement", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ferrous Sulphate (FeSO₄) – Haematinic",
+    color_hint: "Pale green FeSO₄ solution. Used as iron supplement (haematinic) for anaemia.",
+    speak: "Iron reacts with dilute sulphuric acid to form ferrous sulphate and hydrogen gas. Ferrous sulphate is used as haematinic for treatment of iron deficiency anaemia.",
+    details: "FeSO₄·7H₂O (Green vitriol) is official in IP. Used as haematinic for iron deficiency anaemia (increases Hb). Pale green crystals. Tablets: Fersolate. Dose: 200 mg TDS. Turns brown on oxidation (Fe³⁺ = ferric). Store in airtight container.",
+    conditions: "Dilute H₂SO₄, room temperature",
+    state: "Fe(s) + H₂SO₄(aq) → FeSO₄(aq) + H₂(g)",
+    observation: "Pale green FeSO₄ solution formed, H₂ gas evolved"
+  },
+  {
+    id: 36,
+    name: "Sodium Thiosulphate – Dechlorination",
+    equation: "Na₂S₂O₃ + Cl₂ + H₂O → Na₂SO₄ + S + 2HCl",
+    reactants: ["na2s2o3","cl2","sodium thiosulphate","chlorine"],
+    type: "Redox", energy: "Neutral", level: "D.Pharmacy",
+    product: "Sodium Sulphate + Sulphur + HCl",
+    color_hint: "Clear Na₂S₂O₃ + yellow Cl₂ → turbid yellow/white S precipitate.",
+    speak: "Sodium thiosulphate reacts with chlorine to remove it. Used as antidote for chlorine poisoning and to remove excess chlorine from water.",
+    details: "Na₂S₂O₃·5H₂O (Hypo) used in: photography (fixes film - removes unexposed AgBr), antidote for cyanide poisoning (sodium nitrite + sodium thiosulphate), dechlorination of water, iodometric titrations.",
+    conditions: "Aqueous solution",
+    state: "Na₂S₂O₃(aq) + Cl₂(aq) → Na₂SO₄ + S + HCl",
+    observation: "Turbid yellow-white sulphur precipitate"
+  },
+  {
+    id: 37,
+    name: "Zinc Oxide in Creams",
+    equation: "ZnO + 2HCl → ZnCl₂ + H₂O",
+    reactants: ["zno","hcl","zinc oxide","hydrochloric acid"],
+    type: "Pharma", energy: "Neutral", level: "D.Pharmacy",
+    product: "Zinc Chloride + Water",
+    color_hint: "White ZnO dissolves in acid. Amphoteric - dissolves in both acid and NaOH.",
+    speak: "Zinc oxide reacts with hydrochloric acid to form zinc chloride and water. Zinc oxide is used in skin creams, sunscreens and as astringent.",
+    details: "ZnO (Flowers of Zinc) is amphoteric. Used in Zinc cream, calamine lotion (astringent, antiseptic), sunscreens (UV blocker), baby powder, Dentifrice. IP: White/yellowish-white powder. Also reacts with NaOH: ZnO + 2NaOH → Na₂ZnO₂ + H₂O.",
+    conditions: "Dilute HCl",
+    state: "ZnO(s) + HCl(aq) → ZnCl₂(aq) + H₂O(l)",
+    observation: "White ZnO dissolves, colourless ZnCl₂ solution"
+  },
+  {
+    id: 38,
+    name: "Iodine Preparation (Pharmacy)",
+    equation: "2KI + Cl₂ → 2KCl + I₂",
+    reactants: ["ki","cl2","potassium iodide","chlorine","iodine"],
+    type: "Displacement", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Potassium Chloride + Iodine (I₂)",
+    color_hint: "Colourless KI + Cl₂ → brown/dark I₂ solution. Starch turns BLUE-BLACK with I₂.",
+    speak: "Potassium iodide reacts with chlorine to form potassium chloride and iodine. Iodine is used as antiseptic in Lugol's iodine and iodine tincture.",
+    details: "Cl₂ displaces I₂ from KI. I₂ turns starch blue-black (test for starch and I₂). Iodine tincture (2% I₂ + 2.4% KI in alcohol) = strong antiseptic. Lugol's iodine = 5% I₂ + 10% KI. Povidone-iodine = complex - used in Betadine.",
+    conditions: "Aqueous, room temperature",
+    state: "KI(aq) + Cl₂(aq) → KCl(aq) + I₂(aq)",
+    observation: "Brown colour of I₂; blue-black with starch"
+  },
+  {
+    id: 39,
+    name: "Photosynthesis",
+    equation: "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂",
+    reactants: ["co2","h2o","carbon dioxide","water","photosynthesis","glucose"],
+    type: "Redox", energy: "Endothermic", level: "Class 10",
+    product: "Glucose (C₆H₁₂O₆) + Oxygen",
+    color_hint: "No colour change. O₂ released - relights glowing splint. Starch test with I₂ (blue-black).",
+    speak: "In photosynthesis, 6 molecules of carbon dioxide and 6 molecules of water react in presence of sunlight and chlorophyll to give one molecule of glucose and 6 molecules of oxygen.",
+    details: "Endothermic reaction - energy from sunlight is stored as chemical energy (glucose). Chlorophyll is the catalyst. O₂ released (test: relights glowing splint). Glucose stored as starch. Reverse = respiration. Basis of all food chains.",
+    conditions: "Sunlight + Chlorophyll",
+    state: "CO₂(g) + H₂O(l) → C₆H₁₂O₆(aq) + O₂(g)",
+    observation: "O₂ bubbles from leaves in water; starch test positive"
+  },
+  {
+    id: 40,
+    name: "Respiration (Cellular)",
+    equation: "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + Energy",
+    reactants: ["c6h12o6","o2","glucose","oxygen","respiration"],
+    type: "Redox", energy: "Exothermic", level: "Class 10",
+    product: "CO₂ + Water + Energy (ATP)",
+    color_hint: "CO₂ produced turns lime water milky. Moisture on cold mirror confirms H₂O.",
+    speak: "In cellular respiration, glucose reacts with oxygen to produce carbon dioxide, water and energy. This is how our body gets energy from food.",
+    details: "Aerobic respiration: glucose completely oxidized releasing 38 ATP. CO₂ exhaled turns lime water milky. Heat released keeps body warm. Anaerobic (without O₂): C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (fermentation). Reverse of photosynthesis.",
+    conditions: "Body temperature 37°C, enzymes",
+    state: "C₆H₁₂O₆(aq) + O₂(g) → CO₂(g) + H₂O(l) + ATP",
+    observation: "CO₂ exhaled turns lime water milky; body warm"
+  },
+  {
+    id: 41,
+    name: "Combustion of Methane (Natural Gas)",
+    equation: "CH₄ + 2O₂ → CO₂ + 2H₂O",
+    reactants: ["ch4","o2","methane","natural gas","lpg","combustion"],
+    type: "Combustion", energy: "Exothermic", level: "Class 12",
+    product: "Carbon Dioxide + Water",
+    color_hint: "Blue flame when burnt. CO₂ + H₂O produced. CO formed in incomplete combustion.",
+    speak: "Methane, the main component of natural gas and LPG, burns in oxygen to form carbon dioxide and water. This is a combustion reaction releasing large amount of heat.",
+    details: "Complete combustion: blue flame, CO₂ + H₂O. Incomplete combustion (less O₂): CO (toxic) + soot (C). Natural gas = mainly CH₄. LPG = propane + butane. Heat value: 890 kJ/mol. Used for cooking, heating, electricity generation.",
+    conditions: "Ignition in excess oxygen",
+    state: "CH₄(g) + O₂(g) → CO₂(g) + H₂O(g)",
+    observation: "Blue flame, water vapour condenses on cold surface"
+  },
+  {
+    id: 42,
+    name: "Sodium Bicarbonate + Calcium Chloride (Limit Test)",
+    equation: "Na₂CO₃ + CaCl₂ → CaCO₃↓ + 2NaCl",
+    reactants: ["na2co3","cacl2","sodium carbonate","calcium chloride","limit test"],
+    type: "Precipitation", energy: "Neutral", level: "D.Pharmacy",
+    product: "CaCO₃ White Precipitate + NaCl",
+    color_hint: "White precipitate of CaCO₃. Soluble in dilute HCl with effervescence.",
+    speak: "Sodium carbonate reacts with calcium chloride to give a white precipitate of calcium carbonate. This reaction is used in analysis of pharmaceuticals.",
+    details: "Used in identification test for carbonate/bicarbonate group. CaCO₃ precipitate is soluble in dilute HCl with effervescence of CO₂. Important in pharmaceutical analysis and in IP identification tests.",
+    conditions: "Aqueous solutions",
+    state: "CO₃²⁻(aq) + Ca²⁺(aq) → CaCO₃(s)↓",
+    observation: "White precipitate dissolves in HCl with CO₂ bubbles"
+  },
+  {
+    id: 43,
+    name: "Nascent Oxygen from H₂O₂ + KMnO₄",
+    equation: "2KMnO₄ + 5H₂O₂ → 2MnO₂ + 2KOH + 5O₂ + 4H₂O",
+    reactants: ["kmno4","h2o2","potassium permanganate","hydrogen peroxide"],
+    type: "Redox", energy: "Exothermic", level: "D.Pharmacy",
+    product: "MnO₂ + KOH + Oxygen + Water",
+    color_hint: "Purple KMnO₄ decolorized by H₂O₂. Used in iodometric back titration for H₂O₂ assay.",
+    speak: "Potassium permanganate reacts with hydrogen peroxide to form manganese dioxide, potassium hydroxide and oxygen. This reaction is used in assay of hydrogen peroxide.",
+    details: "KMnO₄ oxidizes H₂O₂ in acidic medium. KMnO₄ itself is the indicator (pink/purple → colourless). Used in permanganate titration for H₂O₂ assay. Both are oxidizing agents, but KMnO₄ is stronger.",
+    conditions: "Acidic medium (H₂SO₄)",
+    state: "KMnO₄(aq) + H₂O₂(aq) → MnO₂ + O₂(g)",
+    observation: "Purple colour disappears (decolorization), O₂ bubbles"
+  },
+  {
+    id: 44,
+    name: "Iron + Steam (High Temp)",
+    equation: "3Fe + 4H₂O → Fe₃O₄ + 4H₂",
+    reactants: ["fe","h2o","iron","steam","water"],
+    type: "Redox", energy: "Endothermic", level: "Class 12",
+    product: "Iron Oxide (Fe₃O₄) + Hydrogen",
+    color_hint: "Fe₃O₄ is black magnetic oxide. H₂ gas burns with blue flame.",
+    speak: "Iron reacts with steam at high temperature to form iron trioxide, also called magnetite, and hydrogen gas.",
+    details: "Fe reacts with steam (not cold water) at high temperature forming Fe₃O₄ (magnetite). This is why iron boilers can produce H₂ gas. Different from Fe + O₂ → Fe₂O₃ (rusting). Fe₃O₄ = mixture of FeO + Fe₂O₃.",
+    conditions: "High temperature + steam",
+    state: "Fe(s) + H₂O(g) → Fe₃O₄(s) + H₂(g)",
+    observation: "Black Fe₃O₄ formed; H₂ gas burns with blue flame"
+  },
+  {
+    id: 46,
+    name: "Copper Oxide Reduction by Carbon",
+    equation: "2CuO + C → 2Cu + CO₂",
+    reactants: ["cuo","c","copper oxide","carbon"],
+    type: "Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Copper (Cu) + Carbon Dioxide",
+    color_hint: "Black CuO turns brown/red Cu. Heat is released.",
+    speak: "Copper oxide is reduced by carbon at high temperature to give copper metal and carbon dioxide.",
+    details: "Carbon is a stronger reducing agent than copper. Black CuO is reduced to reddish-brown Cu. This is lab method to get Cu from CuO. Industrial method uses H₂ or carbon monoxide.",
+    conditions: "High temperature (heat)",
+    state: "CuO(s) + C(s) → Cu(s) + CO₂(g)",
+    observation: "Black solid turns red-brown, CO₂ gas produced"
+  },
+  {
+    id: 47,
+    name: "Magnesium Burning in Oxygen",
+    equation: "2Mg + O₂ → 2MgO",
+    reactants: ["mg","o2","magnesium","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Magnesium Oxide (MgO)",
+    color_hint: "Bright white light + white MgO powder. Very bright burning.",
+    speak: "Magnesium burns in oxygen with a bright white light to form magnesium oxide.",
+    details: "Very exothermic combustion releasing bright white light (used in photography flash). MgO = white powder. Temperature > 3000°C. Used in fireworks, flares, and welding.",
+    conditions: "Ignition in oxygen or air",
+    state: "Mg(s) + O₂(g) → MgO(s)",
+    observation: "Bright white light, white ash (MgO) formed"
+  },
+  {
+    id: 48,
+    name: "Zinc with Dilute Acid",
+    equation: "Zn + H₂SO₄ → ZnSO₄ + H₂↑",
+    reactants: ["zn","h2so4","zinc","sulphuric acid"],
+    type: "Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Zinc Sulphate + Hydrogen gas",
+    color_hint: "Colourless solution formed. H₂ gas bubbles. Pops with burning splint.",
+    speak: "Zinc reacts with dilute sulphuric acid to form zinc sulphate and hydrogen gas.",
+    details: "Zn is more reactive than H. Displaced H₂ can be tested with burning splint = 'pop' sound. Used in lab to prepare H₂. H₂ is flammable and explosive.",
+    conditions: "Dilute H₂SO₄",
+    state: "Zn(s) + H₂SO₄(aq) → ZnSO₄(aq) + H₂(g)",
+    observation: "Colourless solution, H₂ gas evolved with 'pop' sound"
+  },
+  {
+    id: 49,
+    name: "Lead Nitrate + Potassium Iodide",
+    equation: "Pb(NO₃)₂ + 2KI → PbI₂↓ + 2KNO₃",
+    reactants: ["pb(no3)2","ki","lead nitrate","potassium iodide"],
+    type: "Precipitation", energy: "Neutral", level: "Class 10",
+    product: "Lead Iodide (yellow ppt) + Potassium Nitrate",
+    color_hint: "Colourless Pb(NO₃)₂ + KI → BRIGHT YELLOW PbI₂ ppt.",
+    speak: "Lead nitrate reacts with potassium iodide to form a bright yellow precipitate of lead iodide.",
+    details: "Classic demonstration reaction. Yellow PbI₂ ppt becomes white on cooling (reverts on heating = thermochromic). Used in student chemistry labs worldwide.",
+    conditions: "Room temperature, aqueous solutions",
+    state: "Pb²⁺(aq) + 2I⁻(aq) → PbI₂(s)↓",
+    observation: "Bright yellow precipitate forms instantly"
+  },
+  {
+    id: 50,
+    name: "Copper Carbonate Decomposition",
+    equation: "CuCO₃ → CuO + CO₂",
+    reactants: ["cuco3","copper carbonate"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Copper Oxide (CuO) + Carbon Dioxide",
+    color_hint: "Green CuCO₃ turns black CuO. CO₂ turns lime water milky.",
+    speak: "Copper carbonate decomposes on heating to give copper oxide and carbon dioxide.",
+    details: "Green copper carbonate is unstable to heat. Gives black CuO and CO₂. CO₂ can be confirmed with lime water. Related to malachite mineral (basic copper carbonate).",
+    conditions: "Heat",
+    state: "CuCO₃(s) → CuO(s) + CO₂(g)",
+    observation: "Green solid turns black, lime water turns milky"
+  },
+  {
+    id: 51,
+    name: "Iron(II) Hydroxide Oxidation",
+    equation: "4Fe(OH)₂ + O₂ + 2H₂O → 4Fe(OH)₃",
+    reactants: ["fe(oh)2","o2","iron hydroxide","oxygen"],
+    type: "Redox", energy: "Exothermic", level: "Class 12",
+    product: "Iron(III) Hydroxide (Fe(OH)₃)",
+    color_hint: "White/pale green Fe(OH)₂ turns reddish-brown Fe(OH)₃.",
+    speak: "Iron(II) hydroxide is oxidized by oxygen in air to form iron(III) hydroxide.",
+    details: "Fe(OH)₂ is unstable and easily oxidized to Fe(OH)₃. This is why freshly precipitated Fe(OH)₂ appears greenish-white initially. Rust formation involves oxidation.",
+    conditions: "Air/oxygen at room temperature",
+    state: "Fe(OH)₂(s) + O₂(g) → Fe(OH)₃(s)",
+    observation: "Green-white ppt turns brown-red in air"
+  },
+  {
+    id: 52,
+    name: "Bromine Water Decolorization by Ethene",
+    equation: "C₂H₄ + Br₂ → C₂H₄Br₂",
+    reactants: ["c2h4","br2","ethene","ethylene","bromine"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "1,2-Dibromoethane (C₂H₄Br₂)",
+    color_hint: "Orange bromine water decolorizes (Br₂ adds to C=C double bond).",
+    speak: "Ethene reacts with bromine water in an addition reaction to give 1,2-dibromoethane.",
+    details: "Test for alkene: decolorization of bromine water/CCl₄ solution. Addition reaction across C=C. Bromine water turns colorless. Used to test unsaturation.",
+    conditions: "Room temperature",
+    state: "C₂H₄(g) + Br₂(aq) → C₂H₄Br₂(l)",
+    observation: "Orange bromine water becomes colorless"
+  },
+  {
+    id: 53,
+    name: "Potassium Permanganate Oxidation of Ethanol",
+    equation: "2KMnO₄ + 3C₂H₅OH → 2MnO₂ + 3CH₃CHO + 2KOH + 2H₂O",
+    reactants: ["kmno4","c2h5oh","potassium permanganate","ethanol"],
+    type: "Redox", energy: "Exothermic", level: "Class 12",
+    product: "MnO₂ + Acetaldehyde + KOH + Water",
+    color_hint: "Purple KMnO₄ decolorizes. Brown MnO₂ ppt forms.",
+    speak: "Potassium permanganate oxidizes ethanol to acetaldehyde. Used in organic analysis.",
+    details: "KMnO₄ is oxidizing agent. Decolorizes and brown MnO₂ forms. In acidic medium: oxidation further to acetic acid. Used in oxidation number analysis.",
+    conditions: "Cold, dilute KMnO₄",
+    state: "C₂H₅OH(l) + KMnO₄(aq) → CH₃CHO(l) + MnO₂(s)",
+    observation: "Purple color disappears, brown precipitate forms"
+  },
+  {
+    id: 54,
+    name: "Formation of Rust",
+    equation: "4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃",
+    reactants: ["fe","o2","h2o","iron","oxygen","water"],
+    type: "Redox", energy: "Exothermic", level: "Class 10",
+    product: "Iron(III) Hydroxide (Rust)",
+    color_hint: "Iron turns reddish-brown Fe(OH)₃ (rust). In presence of air and water.",
+    speak: "Iron reacts with oxygen and water in air to form rust, which is iron(III) hydroxide.",
+    details: "Rusting requires both O₂ and H₂O. Rust = Fe(OH)₃ = hydrated iron oxide. Corrosion problem. Prevention by painting, galvanizing, oil coating, dry air/inert atmosphere.",
+    conditions: "Room temperature, air + moisture",
+    state: "Fe(s) + O₂(g) + H₂O(l) → Fe(OH)₃(s)",
+    observation: "Iron surface becomes reddish-brown (rust)"
+  },
+  {
+    id: 55,
+    name: "Acid-Base Titration: HCl + NaOH",
+    equation: "HCl + NaOH → NaCl + H₂O",
+    reactants: ["hcl","naoh","hydrochloric acid","sodium hydroxide"],
+    type: "Neutralization", energy: "Exothermic", level: "Class 12",
+    product: "Sodium Chloride + Water",
+    color_hint: "Indicator (phenolphthalein pink → colorless). Methyl orange (orange → red).",
+    speak: "Hydrochloric acid reacts with sodium hydroxide in a neutralization reaction to form salt and water.",
+    details: "Standard acid-base titration in chemistry labs. Using indicators like methyl orange or phenolphthalein. Endpoint = color change. One of most common volumetric analysis.",
+    conditions: "Room temperature, aqueous",
+    state: "H⁺(aq) + OH⁻(aq) → H₂O(l)",
+    observation: "Indicator color changes, temperature increases slightly"
+  },
+  {
+    id: 56,
+    name: "Decomposition of Silver Chloride",
+    equation: "2AgCl → 2Ag + Cl₂",
+    reactants: ["agcl","silver chloride","light"],
+    type: "Photochemical", energy: "Endothermic", level: "Class 12",
+    product: "Silver (Ag) + Chlorine gas (Cl₂)",
+    color_hint: "White AgCl turns grey-black. Cl₂ has greenish-yellow color.",
+    speak: "Silver chloride decomposes under sunlight to give silver and chlorine gas.",
+    details: "AgCl is light-sensitive (photographic paper). Exposure to light gives Ag deposit. Similar to AgBr used in photography. Cl₂ gas is toxic, pungent smell.",
+    conditions: "Sunlight (UV light)",
+    state: "AgCl(s) → Ag(s) + Cl₂(g)",
+    observation: "White solid turns black, greenish-yellow Cl₂ gas"
+  },
+  {
+    id: 57,
+    name: "Ammonia Synthesis - Haber Process",
+    equation: "N₂ + 3H₂ ⇌ 2NH₃",
+    reactants: ["n2","h2","nitrogen","hydrogen","haber"],
+    type: "Industrial", energy: "Exothermic", level: "Class 12",
+    product: "Ammonia (NH₃)",
+    color_hint: "Colorless NH₃ gas with pungent smell. Turns damp red litmus blue.",
+    speak: "In the Haber process, nitrogen reacts with hydrogen over an iron catalyst at high pressure and temperature to form ammonia.",
+    details: "Industrial production of ammonia for fertilizers. Catalyst: Fe, Promoters: Al₂O₃, K₂O. Conditions: 400-450°C, 150-300 atm. Reversible reaction. Basis of modern agriculture.",
+    conditions: "400-450°C, Fe catalyst, 150-300 atm",
+    state: "N₂(g) + H₂(g) ⇌ NH₃(g)",
+    observation: "NH₃ formed as colorless gas with pungent odor"
+  },
+  {
+    id: 58,
+    name: "Burning of Phosphorus",
+    equation: "4P + 5O₂ → 2P₂O₅",
+    reactants: ["p","o2","phosphorus","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Phosphorus Pentoxide (P₂O₅)",
+    color_hint: "White fumes of P₂O₅ produced. Reacts with water to form phosphoric acid.",
+    speak: "Phosphorus burns in oxygen to form phosphorus pentoxide.",
+    details: "P burns in O₂ with bright light and white fumes. P₂O₅ is acidic oxide. With water: P₂O₅ + 3H₂O → 2H₃PO₄. Uses of phosphorus in fertilizers, pesticides.",
+    conditions: "Burning in oxygen",
+    state: "P(s) + O₂(g) → P₂O₅(s)",
+    observation: "Bright light, white fumes of P₂O₅"
+  },
+  {
+    id: 59,
+    name: "Sulfur Dioxide + Water (Acid Rain)",
+    equation: "SO₂ + H₂O → H₂SO₃",
+    reactants: ["so2","h2o","sulphur dioxide","water"],
+    type: "Combination", energy: "Exothermic", level: "Class 12",
+    product: "Sulphurous Acid (H₂SO₃)",
+    color_hint: "Colourless SO₂ gas with pungent smell. H₂SO₃ solution turns blue litmus red.",
+    speak: "Sulphur dioxide dissolves in water to form sulphurous acid. This is the cause of acid rain.",
+    details: "SO₂ (air pollutant) + H₂O → H₂SO₃ (weak diprotic acid). Main cause of acid rain. Further oxidation: H₂SO₃ → H₂SO₄. SO₂ from combustion of coal/oil.",
+    conditions: "Room temperature, aqueous",
+    state: "SO₂(g) + H₂O(l) → H₂SO₃(aq)",
+    observation: "Colorless acidic solution, pungent SO₂ smell"
+  },
+  {
+    id: 60,
+    name: "Burning of Sulphur",
+    equation: "S + O₂ → SO₂",
+    reactants: ["s","o2","sulphur","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Sulphur Dioxide (SO₂)",
+    color_hint: "Yellow S burns with blue flame. SO₂ gas = colorless with pungent choking smell.",
+    speak: "Sulphur burns in oxygen to form sulphur dioxide gas.",
+    details: "SO₂ = colorless, pungent gas. Turns moist blue litmus red (acidic). Further oxidation gives H₂SO₄. SO₂ used as disinfectant, bleaching agent, and in food preservation.",
+    conditions: "Burning in air/oxygen",
+    state: "S(s) + O₂(g) → SO₂(g)",
+    observation: "Blue flame, colorless SO₂ gas with pungent odor"
+  },
+  {
+    id: 61,
+    name: "Lime Water Test for CO₂",
+    equation: "Ca(OH)₂ + CO₂ → CaCO₃↓ + H₂O",
+    reactants: ["ca(oh)2","co2","lime water","carbon dioxide"],
+    type: "Precipitation", energy: "Neutral", level: "Class 10",
+    product: "Calcium Carbonate (white ppt) + Water",
+    color_hint: "Colorless lime water turns milky white (CaCO₃ ppt).",
+    speak: "Carbon dioxide gas reacts with lime water to form a white precipitate of calcium carbonate.",
+    details: "Confirming test for CO₂: lime water turns milky. Ca(OH)₂ = slaked lime solution. Further: excess CO₂ converts CaCO₃ → Ca(HCO₃)₂ (solution becomes clear).",
+    conditions: "Room temperature",
+    state: "CO₂(g) + Ca(OH)₂(aq) → CaCO₃(s)↓ + H₂O",
+    observation: "White precipitate (milky); clears with excess CO₂"
+  },
+  {
+    id: 62,
+    name: "Thermite Reaction",
+    equation: "2Al + Fe₂O₃ → 2Fe + Al₂O₃",
+    reactants: ["al","fe2o3","aluminium","iron oxide","thermite"],
+    type: "Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Iron (molten) + Aluminium Oxide",
+    color_hint: "Extremely exothermic. Molten iron at ~2500°C. White Al₂O₃ slag.",
+    speak: "Aluminium displaces iron from iron oxide in a highly exothermic thermite reaction.",
+    details: "One of most exothermic reactions. Temperature > 2500°C. Used in welding, cutting, demolition. Produces molten Fe. Al is stronger reducing agent than Fe. Cannot be extinguished with water!",
+    conditions: "Ignition temperature ~500°C",
+    state: "Al(s) + Fe₂O₃(s) → Fe(l) + Al₂O₃(s)",
+    observation: "Extremely bright, molten iron produced, intense heat"
+  },
+  {
+    id: 63,
+    name: "Saponification – Fat + NaOH",
+    equation: "C₃H₅(OCOC₁₇H₃₅)₃ + 3NaOH → 3C₁₇H₃₅COONa + C₃H₅(OH)₃",
+    reactants: ["fat","naoh","oil","sodium hydroxide"],
+    type: "Double Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Soap (sodium salt) + Glycerol",
+    color_hint: "Fat/oil dissolves in NaOH. Soap separates as white solid. Glycerol = sweet liquid.",
+    speak: "Fats or oils react with sodium hydroxide in saponification reaction to form soap and glycerol.",
+    details: "Saponification: ester (fat/oil) + base → soap + alcohol. Soap = sodium salt of long-chain carboxylic acid. Hard soap uses NaOH, soft soap uses KOH. Reverse reaction = esterification.",
+    conditions: "Heat with NaOH solution",
+    state: "Triglyceride(l) + NaOH(aq) → Soap(s) + Glycerol",
+    observation: "Soap separates as white solid, sweet glycerol formed"
+  },
+  {
+    id: 64,
+    name: "Hydrolysis of Salt - Ferric Chloride",
+    equation: "FeCl₃ + 3H₂O ⇌ Fe(OH)₃ + 3HCl",
+    reactants: ["fecl3","h2o","ferric chloride","water"],
+    type: "Hydrolysis", energy: "Endothermic", level: "Class 12",
+    product: "Iron(III) Hydroxide (ppt) + Hydrochloric Acid",
+    color_hint: "FeCl₃ solution is yellow-brown. Becomes more acidic (pH < 3). Some ppt may form.",
+    speak: "Ferric chloride undergoes hydrolysis in water to form iron hydroxide and hydrochloric acid.",
+    details: "Salt of weak base + strong acid. Hydrolysis produces acid. FeCl₃ solution is acidic. Fe³⁺ + H₂O ⇌ Fe(OH)₂⁺ + H⁺. Higher charge density → more hydrolysis. pH < 7.",
+    conditions: "Aqueous solution at room temperature",
+    state: "Fe³⁺(aq) + H₂O(l) ⇌ Fe(OH)²⁺ + H⁺",
+    observation: "Yellow-brown solution, acidic (red litmus)"
+  },
+  {
+    id: 65,
+    name: "Hydrolysis of Sodium Carbonate",
+    equation: "Na₂CO₃ + H₂O ⇌ NaHCO₃ + NaOH",
+    reactants: ["na2co3","h2o","sodium carbonate","water"],
+    type: "Hydrolysis", energy: "Endothermic", level: "Class 12",
+    product: "Sodium Bicarbonate + Sodium Hydroxide",
+    color_hint: "Na₂CO₃ solution is basic (turns red litmus blue). pH > 8.",
+    speak: "Sodium carbonate undergoes hydrolysis in water to produce an alkaline solution.",
+    details: "Salt of strong base + weak acid. Hydrolysis produces base. CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻. Makes solution basic. pH > 7. Used as cleaner in homes.",
+    conditions: "Aqueous solution",
+    state: "CO₃²⁻(aq) + H₂O(l) ⇌ HCO₃⁻(aq) + OH⁻(aq)",
+    observation: "Colorless solution, basic (blue litmus), slippery feel"
+  },
+  {
+    id: 66,
+    name: "Oxidation of Iodide by Chlorine",
+    equation: "Cl₂ + 2KI → 2KCl + I₂",
+    reactants: ["cl2","ki","chlorine","potassium iodide"],
+    type: "Displacement", energy: "Neutral", level: "Class 12",
+    product: "Potassium Chloride + Iodine",
+    color_hint: "Colorless Cl₂ + KI solution → dark brown I₂. Purple with starch.",
+    speak: "Chlorine displaces iodine from potassium iodide solution due to higher reactivity.",
+    details: "Reactivity series: Cl₂ > Br₂ > I₂. Cl₂ displaces both Br and I. I₂ turns starch blue-black (sensitive test). Uses in photography, medicine, iodometric titrations.",
+    conditions: "Aqueous solution",
+    state: "Cl₂(g) + 2I⁻(aq) → I₂(aq) + 2Cl⁻(aq)",
+    observation: "Dark brown I₂ solution, blue-black with starch"
+  },
+  {
+    id: 67,
+    name: "Formation of Quicklime",
+    equation: "CaCO₃ → CaO + CO₂",
+    reactants: ["caco3","limestone","marble","chalk"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Quicklime (CaO) + Carbon Dioxide",
+    color_hint: "White CaCO₃ → white CaO. Strong heat required.",
+    speak: "Calcium carbonate decomposes on heating to form quicklime and carbon dioxide gas.",
+    details: "CaCO₃ = limestone/marble. Heating at ~900°C gives CaO (quicklime). CaO + H₂O → Ca(OH)₂ (slaked lime). Large scale: in lime kilns. Used in cement, agriculture.",
+    conditions: "High temperature (>900°C)",
+    state: "CaCO₃(s) → CaO(s) + CO₂(g)",
+    observation: "White solid becomes hot, CO₂ gas produced"
+  },
+  {
+    id: 68,
+    name: "Chlorination of Methane",
+    equation: "CH₄ + Cl₂ → CH₃Cl + HCl",
+    reactants: ["ch4","cl2","methane","chlorine"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Chloromethane (CH₃Cl) + Hydrogen Chloride",
+    color_hint: "Cl₂ (yellow-green) + CH₄ (colorless) → CH₃Cl (gas) + HCl.",
+    speak: "Methane undergoes free radical substitution with chlorine to form chloromethane and hydrogen chloride.",
+    details: "Free radical substitution. Requires UV light or heat. Multiple substitutions possible: CH₂Cl₂, CHCl₃, CCl₄. Used in organic synthesis, CFC refrigerants (now banned).",
+    conditions: "UV light or heat",
+    state: "CH₄(g) + Cl₂(g) → CH₃Cl(g) + HCl(g)",
+    observation: "Colorless to brown (if HCl dissolves), acidic gas"
+  },
+  {
+    id: 69,
+    name: "Burning of Charcoal",
+    equation: "2C + O₂ → 2CO",
+    reactants: ["c","o2","charcoal","carbon","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Carbon Monoxide (CO)",
+    color_hint: "Charcoal burns with luminous flame. CO = colorless, toxic, odorless gas.",
+    speak: "Charcoal burns in limited oxygen to form carbon monoxide, which is a toxic gas.",
+    details: "Incomplete combustion of carbon gives CO (not CO₂). CO is toxic (binds to hemoglobin). Further combustion with more O₂: 2CO + O₂ → 2CO₂. CO used in reduction of iron ore.",
+    conditions: "Burning with limited oxygen",
+    state: "C(s) + O₂(g) → CO(g)",
+    observation: "Luminous (sooty) flame, colorless toxic CO"
+  },
+  {
+    id: 70,
+    name: "Reduction of Zinc Oxide by Carbon",
+    equation: "2ZnO + C → 2Zn + CO₂",
+    reactants: ["zno","c","zinc oxide","carbon"],
+    type: "Displacement", energy: "Neutral", level: "Class 12",
+    product: "Zinc (Zn) + Carbon Dioxide",
+    color_hint: "White ZnO → grey Zn metal. Heat required.",
+    speak: "Zinc oxide is reduced by carbon at high temperature to produce zinc metal.",
+    details: "Carbon (stronger reducing agent) reduces ZnO at high temperature. Industrial method uses coke. Zn has low boiling point (907°C) so collected in vapor form, then cooled.",
+    conditions: "High temperature (>1000°C)",
+    state: "ZnO(s) + C(s) → Zn(s) + CO₂(g)",
+    observation: "White solid turns grey, Zn vapor forms"
+  },
+  {
+    id: 71,
+    name: "Addition of Hydrogen to Alkene",
+    equation: "C₂H₄ + H₂ → C₂H₆",
+    reactants: ["c2h4","h2","ethene","hydrogen"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "Ethane (C₂H₆)",
+    color_hint: "Colorless ethene + colorless H₂. Addition across double bond.",
+    speak: "Ethene undergoes addition reaction with hydrogen over nickel catalyst to form ethane.",
+    details: "Hydrogenation reaction. Catalyst: Ni, Pd, Pt at 150-200°C. Used to convert oils (unsaturated) to fats (saturated). Test for unsaturation.",
+    conditions: "Ni catalyst, 150-200°C",
+    state: "C₂H₄(g) + H₂(g) → C₂H₆(g)",
+    observation: "Addition occurs, colorless products"
+  },
+  {
+    id: 72,
+    name: "Reaction of Zinc with Steam",
+    equation: "Zn + H₂O → ZnO + H₂",
+    reactants: ["zn","h2o","zinc","steam"],
+    type: "Displacement", energy: "Endothermic", level: "Class 12",
+    product: "Zinc Oxide (ZnO) + Hydrogen gas",
+    color_hint: "Zn reacts with steam. White ZnO formed. H₂ gas evolved.",
+    speak: "Zinc reacts with steam at high temperature to form zinc oxide and hydrogen gas.",
+    details: "Zn reacts with steam (not cold water). Different from Fe + steam which gives Fe₃O₄. ZnO = white powder. H₂ can be ignited (test tube may break from explosion).",
+    conditions: "High temperature + steam",
+    state: "Zn(s) + H₂O(g) → ZnO(s) + H₂(g)",
+    observation: "White ZnO formed, H₂ gas evolved"
+  },
+  {
+    id: 73,
+    name: "Neutralization – H₂SO₄ + 2NaOH",
+    equation: "H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O",
+    reactants: ["h2so4","naoh","sulphuric acid","sodium hydroxide"],
+    type: "Neutralization", energy: "Exothermic", level: "Class 10",
+    product: "Sodium Sulphate + Water",
+    color_hint: "Temperature increases (exothermic). Neutralization is complete.",
+    speak: "Sulphuric acid reacts with sodium hydroxide to form sodium sulphate and water.",
+    details: "Dibasic acid requires 2 moles NaOH per mole H₂SO₄. Exothermic reaction releases heat. Used in acid-base titrations, dilution reactions.",
+    conditions: "Room temperature",
+    state: "H₂SO₄(aq) + 2OH⁻(aq) → SO₄²⁻(aq) + 2H₂O",
+    observation: "Temperature rises, indicator changes color"
+  },
+  {
+    id: 74,
+    name: "Hydrated Copper Sulfate Dehydration",
+    equation: "CuSO₄·5H₂O → CuSO₄ + 5H₂O",
+    reactants: ["cuso4.5h2o","copper sulphate pentahydrate"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 10",
+    product: "Copper Sulphate (anhydrous) + Water vapor",
+    color_hint: "Blue CuSO₄·5H₂O → white anhydrous CuSO₄. Reversible.",
+    speak: "Hydrated copper sulphate changes color from blue to white when heated, releasing water.",
+    details: "Blue color due to [Cu(H₂O)₄]²⁺ complex. Heating removes water. Anhydrous CuSO₄ is white. Can absorb moisture again (reversible). Used as desiccant.",
+    conditions: "Gentle heat",
+    state: "CuSO₄·5H₂O(s) → CuSO₄(s) + 5H₂O(g)",
+    observation: "Blue color disappears, white powder remains"
+  },
+  {
+    id: 75,
+    name: "Reaction of Calcium with Water",
+    equation: "Ca + 2H₂O → Ca(OH)₂ + H₂↑",
+    reactants: ["ca","h2o","calcium","water"],
+    type: "Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Calcium Hydroxide + Hydrogen gas",
+    color_hint: "Vigorous reaction. Calcium floats. H₂ may burn.",
+    speak: "Calcium metal reacts with water to form calcium hydroxide and hydrogen gas.",
+    details: "Less reactive than Na but more than Mg. Floats and reacts vigorously. Exothermic. H₂ evolved may ignite (white flame). Related to lime compounds.",
+    conditions: "Water at room temperature",
+    state: "Ca(s) + H₂O(l) → Ca(OH)₂(aq) + H₂(g)",
+    observation: "Vigorous reaction, H₂ gas evolved, heat released"
+  },
+  {
+    id: 76,
+    name: "Crystallization of Borax",
+    equation: "Na₂B₄O₇·10H₂O → Na₂B₄O₇ + 10H₂O",
+    reactants: ["na2b4o7.10h2o","borax decahydrate"],
+    type: "Physical Change", energy: "Neutral", level: "D.Pharmacy",
+    product: "Anhydrous Borax + Water",
+    color_hint: "Transparent borax becomes white powder on heating due to loss of water.",
+    speak: "Borax decahydrate loses water on heating to form anhydrous borax.",
+    details: "Borax = salt of boric acid. Used as preservative, cleaning agent, disinfectant. Anhydrous form is white powder. Decahydrate has transparent crystals. Reversible process.",
+    conditions: "Gentle heat",
+    state: "Na₂B₄O₇·10H₂O(s) → Na₂B₄O₇(s) + 10H₂O(g)",
+    observation: "Transparent crystals become opaque white"
+  },
+  {
+    id: 77,
+    name: "Combustion of Ethanol",
+    equation: "C₂H₅OH + 3O₂ → 2CO₂ + 3H₂O",
+    reactants: ["c2h5oh","o2","ethanol","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 12",
+    product: "Carbon Dioxide + Water",
+    color_hint: "Blue flame when ethanol burns. CO₂ + H₂O produced.",
+    speak: "Ethanol burns in oxygen to form carbon dioxide and water.",
+    details: "Complete combustion gives blue flame. Used in spirit lamps. Enthalpy of combustion = 1368 kJ/mol. Source of energy. Bioethanol used as fuel.",
+    conditions: "Ignition in oxygen or air",
+    state: "C₂H₅OH(l) + O₂(g) → CO₂(g) + H₂O(g)",
+    observation: "Blue flame, water condenses on cold surface"
+  },
+  {
+    id: 78,
+    name: "Fluorine Preparation from Fluorite",
+    equation: "CaF₂ + H₂SO₄ → CaSO₄ + 2HF",
+    reactants: ["caf2","h2so4","fluorite","sulphuric acid"],
+    type: "Double Displacement", energy: "Neutral", level: "Class 12",
+    product: "Calcium Sulphate + Hydrofluoric Acid",
+    color_hint: "Pungent HF gas (very toxic). Etches glass.",
+    speak: "Fluorite reacts with sulphuric acid to produce hydrofluoric acid.",
+    details: "HF is weak acid but extremely corrosive to skin (burns deeply). Etches glass due to SiO₂ reaction. Cannot be stored in glass. Used in uranium enrichment, refrigerants.",
+    conditions: "Room temperature",
+    state: "CaF₂(s) + H₂SO₄(l) → CaSO₄(s) + HF(g)",
+    observation: "Pungent HF gas, etches glass containers"
+  },
+  {
+    id: 79,
+    name: "Benzoic Acid + Sodium Hydroxide",
+    equation: "C₆H₅COOH + NaOH → C₆H₅COONa + H₂O",
+    reactants: ["c6h5cooh","naoh","benzoic acid","sodium hydroxide"],
+    type: "Neutralization", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Sodium Benzoate + Water",
+    color_hint: "Benzoic acid dissolves; forms colorless sodium benzoate solution.",
+    speak: "Benzoic acid reacts with sodium hydroxide to form sodium benzoate, used as food preservative.",
+    details: "Benzoic acid is weak acid (pKa = 4.2). Sodium benzoate is commonly used food preservative E211. Soluble in water unlike parent acid. Used in acidic foods.",
+    conditions: "Aqueous solutions",
+    state: "C₆H₅COOH(aq) + NaOH(aq) → C₆H₅COONa(aq) + H₂O",
+    observation: "White solid dissolves, colorless solution formed"
+  },
+  {
+    id: 81,
+    name: "Oxidation of Carbon Monoxide",
+    equation: "2CO + O₂ → 2CO₂",
+    reactants: ["co","o2","carbon monoxide","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 12",
+    product: "Carbon Dioxide (CO₂)",
+    color_hint: "CO burns with blue flame. Colorless → colorless CO₂.",
+    speak: "Carbon monoxide burns in oxygen to form carbon dioxide.",
+    details: "CO is toxic but combustible. Burns with blue flame at high temperature. Important in water-gas shift reaction. CO + H₂O ⇌ CO₂ + H₂.",
+    conditions: "Ignition, high temperature",
+    state: "CO(g) + O₂(g) → CO₂(g)",
+    observation: "Blue flame, CO₂ produced"
+  },
+  {
+    id: 82,
+    name: "Hydration of Alkene",
+    equation: "C₂H₄ + H₂O → C₂H₅OH",
+    reactants: ["c2h4","h2o","ethene","water"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "Ethanol (C₂H₅OH)",
+    color_hint: "Colorless ethene + water → colorless ethanol.",
+    speak: "Ethene undergoes hydration with water over phosphoric acid catalyst to form ethanol.",
+    details: "Industrial ethanol production. Catalyst: H₃PO₄ at 300°C, 70 atm. Addition reaction across double bond. Main industrial method for ethanol.",
+    conditions: "H₃PO₄ catalyst, 300°C, 70 atm",
+    state: "C₂H₄(g) + H₂O(g) → C₂H₅OH(l)",
+    observation: "Ethanol produced, colorless liquid"
+  },
+  {
+    id: 83,
+    name: "Potassium Bromide + Sulphuric Acid",
+    equation: "2KBr + H₂SO₄(conc) → K₂SO₄ + Br₂ + SO₂ + H₂O",
+    reactants: ["kbr","h2so4","potassium bromide","sulphuric acid"],
+    type: "Redox", energy: "Exothermic", level: "Class 12",
+    product: "K₂SO₄ + Br₂ + SO₂ + Water",
+    color_hint: "Reddish-brown Br₂ gas. Pungent SO₂ smell.",
+    speak: "Potassium bromide reacts with concentrated sulphuric acid to produce bromine and sulphur dioxide.",
+    details: "H₂SO₄ acts as oxidizing agent (conc). Br⁻ is oxidized to Br₂. Redox reaction. Br₂ is used in organic synthesis.",
+    conditions: "Concentrated H₂SO₄, heat",
+    state: "Br⁻ + H₂SO₄(conc) → Br₂ + SO₂ + H₂O",
+    observation: "Reddish-brown Br₂ vapor, pungent SO₂"
+  },
+  {
+    id: 84,
+    name: "Reaction of Potassium with Alcohol",
+    equation: "2K + 2C₂H₅OH → 2KC₂H₅O + H₂↑",
+    reactants: ["k","c2h5oh","potassium","ethanol"],
+    type: "Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Potassium Ethoxide + Hydrogen",
+    speak: "Potassium reacts with ethanol to form potassium ethoxide and hydrogen gas.",
+    details: "K is very reactive with alcohols. Forms alkoxides. Vigorous reaction. Used to prepare alkoxides for organic synthesis.",
+    color_hint: "Vigorous bubbling, H₂ gas evolved.",
+    conditions: "Room temperature, ethanol",
+    state: "K(s) + C₂H₅OH(l) → KC₂H₅O(s) + H₂(g)",
+    observation: "Vigorous reaction, H₂ gas, heat released"
+  },
+  {
+    id: 85,
+    name: "Combustion of Ethene",
+    equation: "C₂H₄ + 3O₂ → 2CO₂ + 2H₂O",
+    reactants: ["c2h4","o2","ethene","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 12",
+    product: "Carbon Dioxide + Water",
+    color_hint: "Bright flame with some soot. CO₂ + H₂O produced.",
+    speak: "Ethene burns in oxygen to form carbon dioxide and water.",
+    details: "Hydrocarbon combustion. Bright flame. High carbon content causes some soot (incomplete combustion).",
+    conditions: "Ignition in O₂/air",
+    state: "C₂H₄(g) + O₂(g) → CO₂(g) + H₂O(g)",
+    observation: "Bright flame, water condenses on cold surface"
+  },
+  {
+    id: 86,
+    name: "Oxidation of Formaldehyde to Formic Acid",
+    equation: "HCHO + [O] → HCOOH",
+    reactants: ["hcho","formaldehyde"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Formic Acid (HCOOH)",
+    color_hint: "Oxidation converts HCHO to HCOOH. Formic acid = pungent.",
+    speak: "Formaldehyde is oxidized to formic acid.",
+    details: "Further oxidation of aldehyde. Formic acid = first carboxylic acid. Found in ant venom. Pungent smell.",
+    conditions: "Oxidizing agent",
+    state: "HCHO + [O] → HCOOH",
+    observation: "Formic acid produced, pungent"
+  },
+  {
+    id: 87,
+    name: "Reaction of Sodium Carbonate with Acid",
+    equation: "Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂",
+    reactants: ["na2co3","hcl","sodium carbonate","hydrochloric acid"],
+    type: "Double Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Sodium Chloride + Water + CO₂",
+    color_hint: "Effervescence (CO₂ bubbles). Lime water turns milky.",
+    speak: "Sodium carbonate reacts with hydrochloric acid to produce carbon dioxide gas.",
+    details: "CO₂ evolved turns lime water milky. Classic effervescence reaction. Used as alternative to NaHCO₃ for CO₂ preparation.",
+    conditions: "Room temperature, aqueous",
+    state: "CO₃²⁻(aq) + 2H⁺(aq) → CO₂(g) + H₂O",
+    observation: "Vigorous effervescence, lime water milky"
+  },
+  {
+    id: 88,
+    name: "Esterification of Methanol with Acetic Acid",
+    equation: "CH₃COOH + CH₃OH ⇌ CH₃COOCH₃ + H₂O",
+    reactants: ["ch3cooh","ch3oh","acetic acid","methanol"],
+    type: "Double Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Methyl Acetate + Water",
+    color_hint: "Sweet fruity smell of methyl acetate.",
+    speak: "Acetic acid reacts with methanol to form methyl acetate.",
+    details: "Reversible esterification reaction. Catalyst: H₂SO₄. Methyl acetate has fruity odor. Used in solvents.",
+    conditions: "Conc. H₂SO₄, heat",
+    state: "CH₃COOH + CH₃OH ⇌ CH₃COOCH₃ + H₂O",
+    observation: "Sweet fruity odor, reversible reaction"
+  },
+  {
+    id: 89,
+    name: "Displacement of Oxygen from Copper Oxide",
+    equation: "CuO + H₂ → Cu + H₂O",
+    reactants: ["cuo","h2","copper oxide","hydrogen"],
+    type: "Displacement", energy: "Exothermic", level: "Class 12",
+    product: "Copper (Cu) + Water",
+    color_hint: "Black CuO → reddish-brown Cu. Steam produced.",
+    speak: "Copper oxide is reduced by hydrogen gas to form copper metal.",
+    details: "H₂ is reducing agent. Displacement reaction. Lab method for Cu. Important redox example.",
+    conditions: "Heat with H₂",
+    state: "CuO(s) + H₂(g) → Cu(s) + H₂O(g)",
+    observation: "Black solid turns brown-red, steam"
+  },
+  {
+    id: 90,
+    name: "Decarboxylation of Carboxylic Acid",
+    equation: "RCOO Na + NaOH → RH + Na₂CO₃",
+    reactants: ["carboxylic acid","sodium hydroxide"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkane + Sodium Carbonate",
+    color_hint: "Heating with soda lime. CH₄ evolved.",
+    speak: "Carboxylic acid undergoes decarboxylation with soda lime to form alkane.",
+    details: "Soda lime = NaOH + CaO mixture. Removes carboxyl group as CO₂. Used in preparation of alkanes from carboxylic acids.",
+    conditions: "Soda lime, heat",
+    state: "RCOOH + NaOH → RH + Na₂CO₃",
+    observation: "Gas evolved, alkane formed"
+  },
+  {
+    id: 91,
+    name: "Isomerization of Alkane",
+    equation: "n-butane ⇌ iso-butane (2-methylpropane)",
+    reactants: ["n-butane","butane"],
+    type: "Isomerization", energy: "Neutral", level: "Class 12",
+    product: "2-Methylpropane (iso-butane)",
+    color_hint: "Colorless gas rearrangement. Improves octane rating of fuel.",
+    speak: "n-butane undergoes isomerization to 2-methylpropane.",
+    details: "Catalyst: AlCl₃. Increases octane rating of gasoline. Important in petroleum refining.",
+    conditions: "Catalyst, moderate temperature",
+    state: "C₄H₁₀ ⇌ C₄H₁₀ (isomer)",
+    observation: "Rearrangement of molecular structure"
+  },
+  {
+    id: 92,
+    name: "Reaction of Chlorine with Water",
+    equation: "Cl₂ + H₂O ⇌ HCl + HClO",
+    reactants: ["cl2","h2o","chlorine","water"],
+    type: "Disproportionation", energy: "Neutral", level: "Class 12",
+    product: "Hydrochloric Acid + Hypochlorous Acid",
+    color_hint: "Cl₂ (yellow-green) dissolves in water to form HClO (disinfectant).",
+    speak: "Chlorine reacts with water to form hydrochloric acid and hypochlorous acid.",
+    details: "Disproportionation: Cl₂ is both oxidized and reduced. HClO is bleaching and disinfecting agent. Used in water purification.",
+    conditions: "Room temperature, aqueous",
+    state: "Cl₂(aq) + H₂O(l) ⇌ H⁺ + Cl⁻ + HClO",
+    observation: "Cl₂ color fades, solution becomes acidic"
+  },
+  {
+    id: 93,
+    name: "Combustion of Carbon in Excess Oxygen",
+    equation: "C + O₂ → CO₂",
+    reactants: ["c","o2","carbon","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 10",
+    product: "Carbon Dioxide (CO₂)",
+    color_hint: "C burns to give CO₂. Turns lime water milky.",
+    speak: "Carbon burns in excess oxygen to form carbon dioxide.",
+    details: "Complete combustion. CO₂ turns lime water milky. Confirmation test for CO₂.",
+    conditions: "High temperature in excess O₂",
+    state: "C(s) + O₂(g) → CO₂(g)",
+    observation: "CO₂ produced, lime water turns milky"
+  },
+  {
+    id: 94,
+    name: "Formation of Urea from Ammonia and CO₂",
+    equation: "2NH₃ + CO₂ → NH₂COONH₂ (under pressure)",
+    reactants: ["nh3","co2","ammonia","carbon dioxide"],
+    type: "Combination", energy: "Exothermic", level: "Class 12",
+    product: "Urea (NH₂-CO-NH₂)",
+    color_hint: "NH₃ + CO₂ → white urea crystals.",
+    speak: "Ammonia reacts with carbon dioxide to form urea.",
+    details: "Industrial synthesis of urea - largest source of nitrogen fertilizer. High pressure needed. Haber-Bosch process derives NH₃.",
+    conditions: "150-200°C, high pressure (150-200 atm)",
+    state: "2NH₃ + CO₂ → NH₂COONH₂",
+    observation: "Urea formed, white solid"
+  },
+  {
+    id: 95,
+    name: "Sulphonation of Benzene",
+    equation: "C₆H₆ + H₂SO₄(conc) → C₆H₅SO₃H + H₂O",
+    reactants: ["c6h6","h2so4","benzene","sulphuric acid"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Benzenesulphonic Acid (C₆H₅SO₃H)",
+    color_hint: "Benzene dissolves in conc. H₂SO₄. Forms clear solution.",
+    speak: "Benzene undergoes sulphonation with concentrated sulphuric acid.",
+    details: "Electrophilic aromatic substitution. SO₃ from H₂SO₄ is electrophile. Benzenesulphonic acid used in synthesis of dyes, detergents.",
+    conditions: "Conc. H₂SO₄, 25°C",
+    state: "C₆H₆ + SO₃ → C₆H₅SO₃H",
+    observation: "Clear solution formed"
+  },
+  {
+    id: 96,
+    name: "Cracking of Petroleum",
+    equation: "C₁₆H₃₄ → C₈H₁₈ + C₈H₁₆",
+    reactants: ["alkane","petroleum","long chain"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 12",
+    product: "Shorter alkanes + Alkenes",
+    color_hint: "Heating petroleum produces alkene gases.",
+    speak: "Long-chain alkanes undergo cracking to produce shorter alkanes and alkenes.",
+    details: "Thermal cracking at 450-900°C. Catalyst cracking at lower temperature. Increases fuel yield. Produces alkenes for chemical synthesis.",
+    conditions: "Heat (450-900°C), high temp",
+    state: "C₁₆H₃₄ → C₈H₁₈ + C₈H₁₆",
+    observation: "Smaller molecules, alkenes produced"
+  },
+  {
+    id: 97,
+    name: "Friedel-Crafts Alkylation",
+    equation: "C₆H₆ + CH₃Cl → C₆H₅CH₃ + HCl",
+    reactants: ["c6h6","ch3cl","benzene","chloromethane"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Toluene (C₆H₅CH₃) + HCl",
+    color_hint: "Benzene + CH₃Cl → toluene. Pungent odor.",
+    speak: "Benzene undergoes Friedel-Crafts alkylation with chloromethane to form toluene.",
+    details: "Catalyst: AlCl₃. Electrophilic aromatic substitution. Toluene is important aromatic compound.",
+    conditions: "AlCl₃ catalyst, room temp",
+    state: "C₆H₆ + CH₃Cl → C₆H₅CH₃ + HCl",
+    observation: "Toluene formed, pungent smell"
+  },
+  {
+    id: 98,
+    name: "Epoxidation of Alkene",
+    equation: "C₂H₄ + [O] → C₂H₄O (ethylene oxide)",
+    reactants: ["c2h4","alkene"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ethylene Oxide",
+    color_hint: "Colorless gas oxidized to colorless ethylene oxide.",
+    speak: "Ethene is oxidized to ethylene oxide using oxygen and silver catalyst.",
+    details: "Industrial production. Catalyst: Ag/SiO₂. Ethylene oxide used as sterilizing agent, in antifreeze, and chemical synthesis.",
+    conditions: "Ag catalyst, 250-300°C, pressure",
+    state: "C₂H₄ + ½O₂ → C₂H₄O",
+    observation: "Ethylene oxide formed"
+  },
+  {
+    id: 99,
+    name: "Reaction of Zinc with Iodine",
+    equation: "Zn + I₂ → ZnI₂",
+    reactants: ["zn","i2","zinc","iodine"],
+    type: "Combination", energy: "Exothermic", level: "Class 12",
+    product: "Zinc Iodide (ZnI₂)",
+    color_hint: "Black I₂ + Zn → white ZnI₂. Vigorous reaction.",
+    speak: "Zinc reacts with iodine to form zinc iodide.",
+    details: "Vigorous exothermic reaction. Demonstrates reactivity. ZnI₂ is white solid. Can ignite due to heat.",
+    conditions: "Room temperature",
+    state: "Zn(s) + I₂(s) → ZnI₂(s)",
+    observation: "Vigorous reaction, heat and light"
+  },
+  {
+    id: 100,
+    name: "Oxidation of Alkane by Permanganate",
+    equation: "C₁₀H₂₂ + KMnO₄ → oxidation products",
+    reactants: ["alkane","kmno4","alkane oxidation"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Carboxylic Acid + other oxidation products",
+    color_hint: "Purple KMnO₄ decolorizes (strong oxidation).",
+    speak: "Alkanes are oxidized by potassium permanganate.",
+    details: "KMnO₄ is strong oxidizing agent. Alkanes are resistant to oxidation unless heated. Oxidation breaks C-C bonds.",
+    conditions: "Heat, dilute/acidic KMnO₄",
+    state: "C₁₀H₂₂ + KMnO₄ → oxidation products",
+    observation: "Color decolorizes, oxidation products"
+  },
+  {
+    id: 101,
+    name: "Polyesterification",
+    equation: "nHOCH₂CH₂OH + nCl-CO-C₆H₄-CO-Cl → polyester",
+    reactants: ["ethylene glycol","diacid chloride"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Polyester + HCl",
+    color_hint: "Formation of polymer from monomers.",
+    speak: "Ethylene glycol reacts with dicarboxylic acid chloride to form polyester.",
+    details: "Polymerization via condensation. Used for synthetic fibers like polyester. Important polymer in textiles.",
+    conditions: "Base catalyst, room temperature",
+    state: "n(diol) + n(diacid chloride) → polyester + n HCl",
+    observation: "Polymer formed, viscous liquid"
+  },
+  {
+    id: 102,
+    name: "Combustion of Ammonia",
+    equation: "4NH₃ + 3O₂ → 2N₂ + 6H₂O",
+    reactants: ["nh3","o2","ammonia","oxygen"],
+    type: "Combustion", energy: "Exothermic", level: "Class 12",
+    product: "Nitrogen (N₂) + Water",
+    color_hint: "NH₃ burns with yellow flame. Forms N₂ and H₂O.",
+    speak: "Ammonia burns in oxygen to form nitrogen and water.",
+    details: "Combustion without catalyst gives N₂. With Pt catalyst: 4NH₃ + 5O₂ → 4NO + 6H₂O (Ostwald Process).",
+    conditions: "Ignition in O₂",
+    state: "NH₃(g) + O₂(g) → N₂(g) + H₂O(g)",
+    observation: "Yellow flame, N₂ and H₂O formed"
+  },
+  {
+    id: 103,
+    name: "Reaction of Limestone with Acid",
+    equation: "CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑",
+    reactants: ["caco3","hcl","limestone","hydrochloric acid"],
+    type: "Double Displacement", energy: "Exothermic", level: "Class 10",
+    product: "Calcium Chloride + Water + CO₂",
+    color_hint: "Vigorous effervescence. CO₂ gas bubbles.",
+    speak: "Limestone reacts with hydrochloric acid to produce carbon dioxide gas.",
+    details: "CO₂ evolved rapidly. Confirms carbonate. Used in lab for CO₂ preparation.",
+    conditions: "Room temperature",
+    state: "CaCO₃(s) + 2H⁺(aq) → Ca²⁺(aq) + H₂O + CO₂(g)",
+    observation: "Vigorous bubbling, CO₂ released"
+  },
+  {
+    id: 104,
+    name: "Reduction of Carboxylic Acid by LiAlH₄",
+    equation: "4RCOO H + LiAlH₄ → 4RCH₂OH + LiAlO₂",
+    reactants: ["carboxylic acid","lithium aluminum hydride"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Primary Alcohol + LiAlO₂",
+    color_hint: "LiAlH₄ reacts vigorously with carboxylic acid.",
+    speak: "Carboxylic acid is reduced by lithium aluminum hydride to form primary alcohol.",
+    details: "Strong reducing agent. Reacts violently with water. Used in organic synthesis. Forms primary alcohol from RCOOH.",
+    conditions: "Inert atmosphere, anhydrous conditions",
+    state: "RCOOH + LiAlH₄ → RCH₂OH",
+    observation: "Vigorous reaction, alcohol produced"
+  },
+  {
+    id: 105,
+    name: "Oxidation of Toluene",
+    equation: "C₆H₅CH₃ + [O] → C₆H₅CHO → C₆H₅COOH",
+    reactants: ["toluene","c6h5ch3"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Benzaldehyde then Benzoic Acid",
+    color_hint: "Oxidation of methyl group to aldehyde then acid.",
+    speak: "Toluene is oxidized to benzaldehyde and then to benzoic acid.",
+    details: "Selective oxidation possible. Mild oxidation: benzaldehyde. Strong oxidation: benzoic acid. Important organic transformation.",
+    conditions: "KMnO₄ or other oxidizing agent",
+    state: "C₆H₅CH₃ → C₆H₅CHO → C₆H₅COOH",
+    observation: "Aldehyde then acid products"
+  },
+  {
+    id: 106,
+    name: "Addition of HBr to Alkene",
+    equation: "C₂H₄ + HBr → C₂H₅Br",
+    reactants: ["c2h4","hbr","ethene","hydrogen bromide"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "Bromoethane (C₂H₅Br)",
+    color_hint: "Colorless alkene + colorless HBr → bromoethane.",
+    speak: "Ethene reacts with hydrogen bromide in an addition reaction to form bromoethane.",
+    details: "Markovnikov's rule applies. H adds to C with more H atoms. Addition across double bond.",
+    conditions: "Room temperature",
+    state: "C₂H₄ + HBr → C₂H₅Br",
+    observation: "Organic halide formed"
+  },
+  {
+    id: 107,
+    name: "Halogenation of Alkane",
+    equation: "CH₄ + Br₂ → CH₃Br + HBr",
+    reactants: ["ch4","br2","methane","bromine"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Bromomethane + HBr",
+    color_hint: "CH₄ + Br₂ (orange-brown) → CH₃Br + HBr.",
+    speak: "Methane undergoes free radical substitution with bromine.",
+    details: "Free radical mechanism. UV light needed. Multiple substitutions possible: CH₂Br₂, CHBr₃, CBr₄. Used in synthesis.",
+    conditions: "UV light",
+    state: "CH₄ + Br₂ → CH₃Br + HBr",
+    observation: "Color disappears, HBr gas released"
+  },
+  {
+    id: 108,
+    name: "Hydrocarbon Cracking with Steam",
+    equation: "C₁₂H₂₆ + steam → C₆H₁₄ + C₆H₁₂ + H₂",
+    reactants: ["alkane","steam"],
+    type: "Decomposition", energy: "Endothermic", level: "Class 12",
+    product: "Shorter alkanes + Alkenes + H₂",
+    color_hint: "Heating with steam breaks long chains.",
+    speak: "Long-chain hydrocarbons undergo steam cracking to produce shorter hydrocarbons.",
+    details: "Industrial process at 750-900°C. Produces alkenes for chemical industry. H₂ gas also useful.",
+    conditions: "Steam, 750-900°C",
+    state: "C₁₂H₂₆ + H₂O → shorter chains + alkenes + H₂",
+    observation: "Smaller molecules formed"
+  },
+  {
+    id: 109,
+    name: "Formation of Grignard Reagent",
+    equation: "C₂H₅Br + Mg → C₂H₅MgBr",
+    reactants: ["c2h5br","mg","bromoethane","magnesium"],
+    type: "Combination", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ethylmagnesium Bromide (Grignard reagent)",
+    color_hint: "Reaction in ether. Organometallic compound formed.",
+    speak: "Alkyl halide reacts with magnesium to form Grignard reagent.",
+    details: "Important in organic synthesis. Grignard reagents are strong nucleophiles and bases. Used in C-C bond formation.",
+    conditions: "Anhydrous ether solvent",
+    state: "RBr + Mg → RMgBr",
+    observation: "Organometallic compound formed"
+  },
+  {
+    id: 110,
+    name: "Oxidative Cleavage of Alkene",
+    equation: "R-CH=CH-R' + KMnO₄ → RCHO + R'CHO (or RCOOH + R'COOH)",
+    reactants: ["alkene","kmno4"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aldehydes or Carboxylic Acids",
+    color_hint: "KMnO₄ cleaves C=C double bond.",
+    speak: "Alkenes undergo oxidative cleavage by potassium permanganate to form aldehydes or carboxylic acids.",
+    details: "Breaks C=C bond completely. Can determine alkene structure from products. Useful in organic analysis.",
+    conditions: "KMnO₄, heat",
+    state: "C=C + KMnO₄ → aldehydes/carboxylic acids",
+    observation: "Double bond is cleaved"
+  },
+  {
+    id: 111,
+    name: "Aldol Condensation",
+    equation: "2CH₃CHO → CH₃CH=CHCHO + H₂O",
+    reactants: ["ch3cho","acetaldehyde"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Crotonaldehyde (but-2-enal) + Water",
+    color_hint: "Aldol product formation. Important C-C bond formation.",
+    speak: "Acetaldehyde undergoes aldol condensation to form crotonaldehyde.",
+    details: "Base-catalyzed. Forms C-C bond. Important in organic synthesis. Cross-aldol reactions produce different products.",
+    conditions: "Base catalyst (NaOH), cool temperature",
+    state: "2 aldehydes → C-C bonded product",
+    observation: "New C-C bond formed"
+  },
+  {
+    id: 112,
+    name: "Michael Addition",
+    equation: "C=C-C≡N + nucleophile → addition product",
+    reactants: ["alpha beta unsaturated","nucleophile"],
+    type: "Addition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Addition Product",
+    color_hint: "Nucleophilic addition to activated double bond.",
+    speak: "Michael addition involves nucleophilic addition to alpha-beta unsaturated carbonyl compounds.",
+    details: "Important in organic synthesis. Creates C-C bonds. Used in formation of complex molecules.",
+    conditions: "Base catalyst, nucleophile",
+    state: "α,β-unsaturated carbonyl + nucleophile → product",
+    observation: "Addition across double bond"
+  },
+  {
+    id: 113,
+    name: "Wittig Reaction",
+    equation: "R₂C=O + R'₃P=CHR'' → R₂C=CHR'' + R'₃PO",
+    reactants: ["carbonyl compound","ylide"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkene + Phosphine Oxide",
+    color_hint: "Conversion of C=O to C=C.",
+    speak: "Wittig reaction converts carbonyl to alkene using phosphonium ylide.",
+    details: "Creates C=C from C=O. Stereoselectivity possible. Used for alkene synthesis. Mild conditions.",
+    conditions: "Ylide reagent, solvent",
+    state: "C=O + ylide → C=C + PO",
+    observation: "Double bond formed"
+  },
+  {
+    id: 114,
+    name: "Hydroboration-Oxidation of Alkene",
+    equation: "C₂H₄ + BH₃ → R-BH₂ then H₂O₂ → C₂H₅OH",
+    reactants: ["c2h4","bh3"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "Alcohol",
+    color_hint: "Anti-Markovnikov hydration of alkene.",
+    speak: "Alkene undergoes hydroboration followed by oxidation to form alcohol.",
+    details: "Anti-Markovnikov addition. OH adds to less substituted C. Important in synthesis of alcohols.",
+    conditions: "BH₃, then H₂O₂/OH⁻",
+    state: "Alkene + BH₃ → B-alkyl → alcohol",
+    observation: "Alcohol formed"
+  },
+  {
+    id: 115,
+    name: "Diels-Alder Reaction",
+    equation: "diene + dienophile → cyclohexene derivative",
+    reactants: ["diene","dienophile"],
+    type: "Cycloaddition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Six-membered ring product",
+    color_hint: "Formation of cyclohexene ring.",
+    speak: "Diels-Alder reaction forms six-membered rings from conjugated diene and dienophile.",
+    details: "Pericyclic reaction. Concerted mechanism. Stereospecific. Important in organic synthesis for ring formation.",
+    conditions: "Heat, solvent",
+    state: "diene + dienophile → cyclohexene",
+    observation: "Ring formed"
+  },
+  {
+    id: 116,
+    name: "Hofmann Elimination",
+    equation: "R-CH₂CH₂-NMe₃⁺ I⁻ + strong base → R-CH=CH₂ + NMe₃ + H₂O",
+    reactants: ["quaternary ammonium","base"],
+    type: "Elimination", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkene + Tertiary Amine + Water",
+    color_hint: "Formation of alkene from amine salt.",
+    speak: "Hofmann elimination converts quaternary ammonium salts to alkenes.",
+    details: "Anti-Zaitsev's rule. Forms less substituted alkene. Used in structure determination.",
+    conditions: "Ag₂O, heat or KOH, heat",
+    state: "Quaternary ammonium salt → alkene",
+    observation: "Alkene formed"
+  },
+  {
+    id: 117,
+    name: "SN1 Reaction - Alkyl Halide",
+    equation: "RBr + H₂O → ROH + HBr",
+    reactants: ["alkyl halide","water"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alcohol + Hydrohalide",
+    color_hint: "Formation of alcohol from alkyl halide.",
+    speak: "Alkyl halide undergoes SN1 reaction to form alcohol.",
+    details: "Unimolecular nucleophilic substitution. Forms carbocation. Stereochemistry inversion possible.",
+    conditions: "Polar solvent, heat",
+    state: "R-X + H₂O → ROH + HX",
+    observation: "Alcohol formed"
+  },
+  {
+    id: 118,
+    name: "SN2 Reaction - Alkyl Halide",
+    equation: "RBr + OH⁻ → ROH + Br⁻",
+    reactants: ["alkyl halide","hydroxide"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alcohol + Halide ion",
+    color_hint: "Inversion of stereochemistry.",
+    speak: "Alkyl halide undergoes SN2 reaction with hydroxide to form alcohol.",
+    details: "Bimolecular nucleophilic substitution. Inversion of stereochemistry. Concerted mechanism.",
+    conditions: "Polar solvent, nucleophile",
+    state: "R-X + Nu⁻ → R-Nu + X⁻",
+    observation: "Alcohol formed with inversion"
+  },
+  {
+    id: 119,
+    name: "Pinacol Rearrangement",
+    equation: "Pinacol → pinacolone (rearrangement with acid)",
+    reactants: ["diol","pinacol"],
+    type: "Rearrangement", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ketone",
+    color_hint: "Diol rearrangement to ketone under acidic conditions.",
+    speak: "Pinacol undergoes acid-catalyzed rearrangement to form pinacolone.",
+    details: "1,2-diol rearrangement. Hydride/methyl shift. Forms more stable carbocation. Important in synthesis.",
+    conditions: "Acid catalyst",
+    state: "Diol → ketone via carbocation",
+    observation: "Ketone formed"
+  },
+  {
+    id: 120,
+    name: "Benzilic Acid Rearrangement",
+    equation: "Benzil + KOH → Benzilic acid (rearrangement)",
+    reactants: ["benzil","koh"],
+    type: "Rearrangement", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Benzilic acid",
+    color_hint: "Ketone rearrangement in base to form hydroxy acid.",
+    speak: "Benzil undergoes base-catalyzed rearrangement to form benzilic acid.",
+    details: "Rearrangement of diketone to α-hydroxy acid. Benzilic acid used in drugs. Important named reaction.",
+    conditions: "Base (KOH), solvent",
+    state: "Diketone → α-hydroxy acid",
+    observation: "Hydroxy acid formed"
+  },
+  {
+    id: 121,
+    name: "Acylation of Benzene",
+    equation: "C₆H₆ + CH₃COCl → C₆H₅COCH₃ + HCl",
+    reactants: ["benzene","acetyl chloride"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Acetophenone (C₆H₅COCH₃) + HCl",
+    color_hint: "Friedel-Crafts acylation forms aromatic ketone.",
+    speak: "Benzene undergoes Friedel-Crafts acylation with acetyl chloride to form acetophenone.",
+    details: "Catalyst: AlCl₃. Forms aromatic ketone. Used in synthesis of pharmaceuticals.",
+    conditions: "AlCl₃ catalyst, room temperature",
+    state: "C₆H₆ + CH₃COCl → C₆H₅COCH₃ + HCl",
+    observation: "Ketone product formed"
+  },
+  {
+    id: 122,
+    name: "Oxidation of Primary Alcohol to Aldehyde",
+    equation: "RCH₂OH + [O] → RCHO + H₂O",
+    reactants: ["primary alcohol"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Aldehyde + Water",
+    color_hint: "Oxidation using PCC or Jones reagent.",
+    speak: "Primary alcohol is oxidized to aldehyde.",
+    details: "Using PCC stops at aldehyde. Jones oxidation continues to carboxylic acid. Important functional group transformation.",
+    conditions: "PCC or Jones reagent",
+    state: "RCH₂OH → RCHO",
+    observation: "Aldehyde formed"
+  },
+  {
+    id: 123,
+    name: "Oxidation of Secondary Alcohol to Ketone",
+    equation: "R₂CHOH + [O] → R₂C=O",
+    reactants: ["secondary alcohol"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Ketone",
+    color_hint: "Oxidation to ketone. No further oxidation possible.",
+    speak: "Secondary alcohol is oxidized to ketone.",
+    details: "Uses chromic acid, KMnO₄, Jones reagent, or PCC. Terminal oxidation state for secondary alcohols.",
+    conditions: "Oxidizing agent",
+    state: "R₂CHOH → R₂C=O",
+    observation: "Ketone formed"
+  },
+  {
+    id: 124,
+    name: "Clemmensen Reduction",
+    equation: "R₂C=O + Zn-Hg + HCl → R₂CH₂",
+    reactants: ["ketone","zinc amalgam"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkane",
+    color_hint: "Reduction of carbonyl to methylene group.",
+    speak: "Clemmensen reduction converts ketones and aldehydes to alkanes.",
+    details: "Removes oxygen completely. Forms alkane from carbonyl. Zinc amalgam + HCl. Used in organic synthesis.",
+    conditions: "Zn-Hg, conc. HCl, heat",
+    state: "C=O → CH₂",
+    observation: "Alkane formed"
+  },
+  {
+    id: 125,
+    name: "Wolff-Kishner Reduction",
+    equation: "R₂C=O + NH₂NH₂ + KOH → R₂CH₂",
+    reactants: ["ketone","hydrazine"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkane",
+    color_hint: "Hydrazine reduces carbonyl to methylene.",
+    speak: "Wolff-Kishner reduction converts carbonyls to alkanes using hydrazine.",
+    details: "Alternative to Clemmensen. Forms alkane from carbonyl. Milder conditions than Clemmensen.",
+    conditions: "Hydrazine, KOH, heat",
+    state: "C=O → CH₂",
+    observation: "Alkane formed"
+  },
+  {
+    id: 126,
+    name: "Iodoform Reaction",
+    equation: "CH₃COR + I₂ + NaOH → RCOO Na + CHI₃",
+    reactants: ["methyl ketone","iodine"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Carboxylic acid salt + Iodoform",
+    color_hint: "Yellow iodoform (CHI₃) precipitate.",
+    speak: "Methyl ketones undergo iodoform reaction to form iodoform.",
+    details: "Test for methyl ketones. Iodoform = yellow solid with characteristic smell. Used in analysis.",
+    conditions: "I₂, NaOH, aqueous",
+    state: "COCH₃ + I₂ → COO⁻ + CHI₃",
+    observation: "Yellow iodoform precipitate"
+  },
+  {
+    id: 127,
+    name: "Cannizzaro Reaction",
+    equation: "2HCHO + NaOH → CH₃OH + HCOO Na",
+    reactants: ["formaldehyde","naoh"],
+    type: "Disproportionation", energy: "Exothermic", level: "Class 12",
+    product: "Methanol + Sodium Formate",
+    color_hint: "Formaldehyde disproportionates in base.",
+    speak: "Formaldehyde undergoes Cannizzaro reaction with base to form methanol and formate.",
+    details: "Aldehydes without α-H undergo this. HCHO has no α-H. Produces both alcohol and acid.",
+    conditions: "Strong base (NaOH), aqueous",
+    state: "2 HCHO + NaOH → CH₃OH + HCOONa",
+    observation: "Methanol and formate formed"
+  },
+  {
+    id: 128,
+    name: "Tischenko Reaction",
+    equation: "2CH₃CHO → CH₃COOC₂H₅",
+    reactants: ["acetaldehyde"],
+    type: "Disproportionation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ethyl Acetate",
+    color_hint: "Acetaldehyde disproportionates to ester.",
+    speak: "Acetaldehyde undergoes Tischenko reaction to form ethyl acetate.",
+    details: "Base-catalyzed disproportionation. One oxidized to acid, one reduced to alcohol, forming ester.",
+    conditions: "Base catalyst (Al(O-t-Bu)₃)",
+    state: "2 CH₃CHO → CH₃COOC₂H₅",
+    observation: "Ester formed"
+  },
+  {
+    id: 129,
+    name: "Perkin Reaction",
+    equation: "C₆H₅CHO + CH₂(COCH₃)₂ → C₆H₅CH=C(COCH₃)₂ + H₂O",
+    reactants: ["benzaldehyde","methylene active compound"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Unsaturated Ketone",
+    color_hint: "Aldehyde condenses with active methylene compound.",
+    speak: "Perkin reaction condenses aromatic aldehyde with active methylene compounds.",
+    details: "Wittig-like reaction. Forms C=C bond. Used in organic synthesis. Base-catalyzed.",
+    conditions: "Base catalyst",
+    state: "ArCHO + active CH₂ → ArCH=C-product",
+    observation: "Unsaturated product formed"
+  },
+  {
+    id: 130,
+    name: "Horner-Wadsworth-Emmons Reaction",
+    equation: "R₂C=O + (EtO)₂P(O)CH₂R → R₂C=CHR",
+    reactants: ["carbonyl","phosphonate"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkene",
+    color_hint: "Formation of alkene from carbonyl and phosphonate.",
+    speak: "Horner-Wadsworth-Emmons reaction forms alkenes from carbonyls using phosphonate esters.",
+    details: "Alternative to Wittig. More functional group tolerant. Forms alkene with high E/Z selectivity.",
+    conditions: "Base, solvent",
+    state: "C=O + phosphonate → C=C",
+    observation: "Alkene formed"
+  },
+  {
+    id: 131,
+    name: "Amination of Aniline Derivatives",
+    equation: "C₆H₅NH₂ + CH₃I → C₆H₅NHCH₃ + HI",
+    reactants: ["aniline","methyl iodide"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "N-Methylaniline",
+    color_hint: "Alkylation of aniline nitrogen.",
+    speak: "Aniline undergoes N-alkylation with methyl iodide to form N-methylaniline.",
+    details: "Nucleophilic N. Can undergo multiple alkylations. Forms secondary and tertiary amines.",
+    conditions: "K₂CO₃, solvent",
+    state: "ArNH₂ + RI → ArNHR",
+    observation: "Alkylated amine formed"
+  },
+  {
+    id: 132,
+    name: "Reductive Amination",
+    equation: "R₂C=O + R'NH₂ + NaBH₄ → R₂CHNHR'",
+    reactants: ["carbonyl","amine","reducing agent"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Secondary Amine",
+    color_hint: "Reduction of imine to amine.",
+    speak: "Carbonyl compound is reductively aminated with amine to form secondary amine.",
+    details: "Important reaction for amine synthesis. Forms C-N bond and reduces C=N. Used in pharmaceuticals.",
+    conditions: "NaBH₄ or other reducing agent",
+    state: "C=O + RNH₂ → C=NR → CHNHR",
+    observation: "Amine product formed"
+  },
+  {
+    id: 133,
+    name: "Paal-Knorr Synthesis",
+    equation: "succindialdehyde + amine → pyrrole",
+    reactants: ["dialdehyde","primary amine"],
+    type: "Cyclization", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Pyrrole",
+    color_hint: "Formation of five-membered nitrogen heterocycle.",
+    speak: "Paal-Knorr reaction forms pyrrole from dialdehyde and primary amine.",
+    details: "Heterocyclic synthesis. Forms aromatic N-heterocycle. Used in pharmaceutical synthesis.",
+    conditions: "Acid catalyst or heat",
+    state: "Dialdehyde + amine → pyrrole + H₂O",
+    observation: "Heterocycle formed"
+  },
+  {
+    id: 134,
+    name: "Knorr Synthesis of Indole",
+    equation: "phenylhydrazine + acetoacetate → indole",
+    reactants: ["phenylhydrazine","acetoacetate"],
+    type: "Cyclization", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Indole",
+    color_hint: "Formation of fused aromatic heterocycle.",
+    speak: "Knorr synthesis forms indole from phenylhydrazine and acetoacetate.",
+    details: "Important heterocyclic synthesis. Forms indole nucleus found in many natural products. Important in tryptophan.",
+    conditions: "Acid catalyst, heat",
+    state: "Phenylhydrazine + acetoacetate → indole",
+    observation: "Indole formed"
+  },
+  {
+    id: 135,
+    name: "Robinson Annulation",
+    equation: "1,3-dicarbonyl + enone → six-membered ring",
+    reactants: ["1,3-dicarbonyl","enone"],
+    type: "Cycloaddition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Cyclohexanone derivative",
+    color_hint: "Formation of six-membered ring with two carbonyls.",
+    speak: "Robinson annulation forms six-membered rings from dicarbonyl and enone.",
+    details: "Combines Michael addition and aldol condensation. Important in natural product synthesis. Forms complex structures.",
+    conditions: "Base catalyst",
+    state: "1,3-dicarbonyl + enone → ring",
+    observation: "Ring formed"
+  },
+  {
+    id: 136,
+    name: "Catalytic Hydrogenation of Benzene",
+    equation: "C₆H₆ + 3H₂ → C₆H₁₂",
+    reactants: ["benzene","h2"],
+    type: "Addition", energy: "Exothermic", level: "Class 12",
+    product: "Cyclohexane",
+    color_hint: "Aromatic ring converted to alicyclic ring.",
+    speak: "Benzene undergoes catalytic hydrogenation to form cyclohexane.",
+    details: "Catalyst: Ni or Pt. High pressure needed (100-200 atm). Saturates aromatic ring.",
+    conditions: "Ni catalyst, 100-200 atm, 150-200°C",
+    state: "C₆H₆ + 3H₂ → C₆H₁₂",
+    observation: "Cyclohexane formed"
+  },
+  {
+    id: 137,
+    name: "Nucleophilic Aromatic Substitution",
+    equation: "C₆F₅H + OH⁻ → C₆F₄(OH)H",
+    reactants: ["fluorobenzene","hydroxide"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Phenol derivative",
+    color_hint: "Substitution on aromatic ring by nucleophile.",
+    speak: "Nucleophilic aromatic substitution occurs on electron-deficient aromatic rings.",
+    details: "Requires electron-withdrawing groups. SNAr mechanism. Addition-elimination pathway.",
+    conditions: "Strong nucleophile, base",
+    state: "Ar-leaving group + nucleophile → Ar-Nu",
+    observation: "Aromatic substitution product"
+  },
+  {
+    id: 138,
+    name: "Benzyne Intermediate Formation",
+    equation: "ArX + strong base → benzyne → products",
+    reactants: ["aryl halide","strong base"],
+    type: "Elimination-Addition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Substituted Benzene",
+    color_hint: "Formation of aromatic intermediate.",
+    speak: "Benzyne intermediates are formed from aryl halides with strong bases.",
+    details: "Triple bond character in benzyne. Reacts with nucleophiles. Mechanism: elimination-addition.",
+    conditions: "Strong base like NaNH₂",
+    state: "Ar-X + strong base → benzyne → products",
+    observation: "Aromatic product formed"
+  },
+  {
+    id: 139,
+    name: "Ipso Substitution",
+    equation: "C₆H₅NO₂ + nucleophile → products",
+    reactants: ["aromatic nitro compound"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Substituted Benzene",
+    color_hint: "Nucleophilic substitution at position bearing NO₂.",
+    speak: "Ipso substitution replaces the nitro group on aromatic ring.",
+    details: "Nitro group is electron-withdrawing and good leaving group. Facilitates nucleophilic substitution.",
+    conditions: "Nucleophile, heat",
+    state: "Ar-NO₂ + Nu → Ar-Nu",
+    observation: "Aromatic product"
+  },
+  {
+    id: 140,
+    name: "Vilsmeier-Haack Reaction",
+    equation: "aromatic ring + POCl₃/DMF → aromatic aldehyde",
+    reactants: ["aromatic","phosphoryl chloride","dmf"],
+    type: "Formylation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aromatic Aldehyde",
+    color_hint: "Aromatic ring substitution with CHO group.",
+    speak: "Vilsmeier-Haack reaction introduces aldehyde group on aromatic rings.",
+    details: "POCl₃ + DMF forms strong electrophile. Formylates activated aromatics. Used in synthesis.",
+    conditions: "POCl₃, DMF, heat",
+    state: "Ar-H + (POCl₃/DMF) → Ar-CHO",
+    observation: "Aldehyde product formed"
+  },
+  {
+    id: 141,
+    name: "Reimer-Tiemann Reaction",
+    equation: "phenol + CHCl₃ + NaOH → salicylaldehyde",
+    reactants: ["phenol","chloroform","naoh"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Salicylaldehyde",
+    color_hint: "Aromatic hydroxyl compound formylated.",
+    speak: "Reimer-Tiemann reaction converts phenols to salicylaldehydes.",
+    details: "CHCl₃ generates dichlorocarbene. Activated aromatic. Important in synthesis.",
+    conditions: "CHCl₃, NaOH, aqueous",
+    state: "Ph-OH + CHCl₃ + NaOH → salicylaldehyde",
+    observation: "Aldehyde product formed"
+  },
+  {
+    id: 142,
+    name: "Duff Reaction",
+    equation: "aniline + hexamethylenetetramine → aromatic aldehyde",
+    reactants: ["aniline derivatives"],
+    type: "Formylation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aromatic Aldehyde",
+    color_hint: "Aromatic amine formylated to aldehyde.",
+    speak: "Duff reaction formylates aniline derivatives to aromatic aldehydes.",
+    details: "Uses hexamethylenetetramine as formal source. Mild conditions. Useful for functionalization.",
+    conditions: "Hexamethylenetetramine, aqueous acid",
+    state: "Ar-NH₂ + hexamine → Ar-CHO",
+    observation: "Aldehyde formed"
+  },
+  {
+    id: 143,
+    name: "Dakin Oxidation",
+    equation: "aromatic aldehyde + H₂O₂ → phenol",
+    reactants: ["aromatic aldehyde","h2o2"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Phenol",
+    color_hint: "Oxidation of benzaldehyde to phenol.",
+    speak: "Dakin oxidation converts aromatic aldehydes to phenols using hydrogen peroxide.",
+    details: "Forms stable rearrangement intermediate. Converts CHO to OH. Used in synthesis.",
+    conditions: "H₂O₂, base catalyst",
+    state: "Ar-CHO + H₂O₂ → Ar-OH",
+    observation: "Phenol formed"
+  },
+  {
+    id: 144,
+    name: "Teuber Oxidation",
+    equation: "phenolic ether + H₂O₂ → quinone",
+    reactants: ["phenolic ether","h2o2"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Quinone derivative",
+    color_hint: "Oxidation of phenol to quinone.",
+    speak: "Teuber oxidation converts phenolic ethers to quinones using hydrogen peroxide.",
+    details: "Oxidizes aromatic OH to C=O (quinone form). Important in synthesis.",
+    conditions: "H₂O₂, acid or base",
+    state: "Phenolic ether + H₂O₂ → quinone",
+    observation: "Quinone formed"
+  },
+  {
+    id: 145,
+    name: "Barton-McCombie Deoxygenation",
+    equation: "alcohol → deoxygenated alkane",
+    reactants: ["alcohol"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkane",
+    color_hint: "Removal of OH group from molecule.",
+    speak: "Barton-McCombie reaction removes oxygen from alcohols to form alkanes.",
+    details: "Uses xanthate intermediate. Radical process. Useful in synthesis of deoxy sugars.",
+    conditions: "Xanthate formation then AIBN, Bu₃SnH",
+    state: "ROH → RH",
+    observation: "Alkane formed"
+  },
+  {
+    id: 146,
+    name: "Protecting Group - Benzyl Ether",
+    equation: "ROH + C₆H₅CH₂Cl → ROCHcmdline₂C₆H₅",
+    reactants: ["alcohol","benzyl chloride"],
+    type: "Protection", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Benzyl Ether",
+    color_hint: "Protection of hydroxyl group.",
+    speak: "Benzyl ether formation protects alcohols in synthesis.",
+    details: "Removed by hydrogenolysis or acid. Important protecting group. Easy to remove.",
+    conditions: "Base, solvent",
+    state: "ROH + BnCl → ROBn",
+    observation: "Protected alcohol formed"
+  },
+  {
+    id: 147,
+    name: "Protecting Group - Silyl Ether",
+    equation: "ROH + (Et₃Si)₂O → ROSi(Et)₃",
+    reactants: ["alcohol","silyl chloride"],
+    type: "Protection", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Silyl Ether",
+    color_hint: "Protection of hydroxyl with TBDMS or TMS.",
+    speak: "Silyl ether formation protects alcohols in organic synthesis.",
+    details: "TBDMS = popular silyl protecting group. Stable to many conditions. Removed by fluoride.",
+    conditions: "Base, DMF, imidazole",
+    state: "ROH + R₃SiCl → ROSiR₃",
+    observation: "Protected ether formed"
+  },
+  {
+    id: 148,
+    name: "Oppenauer Oxidation",
+    equation: "secondary alcohol ⇌ ketone (Al(i-PrO)₃)",
+    reactants: ["secondary alcohol"],
+    type: "Oxidation-Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ketone",
+    color_hint: "Selective oxidation using aluminum alkoxide.",
+    speak: "Oppenauer oxidation converts secondary alcohols to ketones using aluminum alkoxides.",
+    details: "Reversible reaction. Mild conditions. Selective for secondary alcohols.",
+    conditions: "Al(i-PrO)₃, acetone",
+    state: "R₂CHOH ⇌ R₂C=O",
+    observation: "Ketone formed"
+  },
+  {
+    id: 149,
+    name: "Meerwein-Ponndorf-Verley Reduction",
+    equation: "ketone + Al(i-PrO)₃ + i-PrOH → secondary alcohol",
+    reactants: ["ketone"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Secondary Alcohol",
+    color_hint: "Selective reduction of ketone to alcohol.",
+    speak: "Meerwein-Ponndorf-Verley reduction reduces ketones to secondary alcohols.",
+    details: "Mild, selective reduction. Reverse of Oppenauer. Uses aluminum alkoxide.",
+    conditions: "Al(i-PrO)₃, i-PrOH",
+    state: "R₂C=O + Al(i-PrO)₃ → R₂CHOH",
+    observation: "Alcohol formed"
+  },
+  {
+    id: 150,
+    name: "Cannizzaro-like Reaction",
+    equation: "aromatic aldehyde + NaOH → carboxylic acid + alcohol",
+    reactants: ["aromatic aldehyde","naoh"],
+    type: "Disproportionation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Carboxylic Acid + Alcohol",
+    color_hint: "Aldehyde disproportionates in strong base.",
+    speak: "Aromatic aldehydes without α-hydrogen undergo Cannizzaro reaction in strong base.",
+    details: "Forms both carboxylic acid and alcohol. Important for benzaldehyde. Base-catalyzed.",
+    conditions: "Strong base (NaOH), aqueous",
+    state: "2 ArCHO + NaOH → ArCOONa + ArCH₂OH",
+    observation: "Acid and alcohol products"
+  },
+  {
+    id: 151,
+    name: "Baeyer-Villiger Oxidation",
+    equation: "ketone + RCOOOH → ester",
+    reactants: ["ketone","peroxy acid"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ester",
+    color_hint: "Ketone converted to ester via insertion.",
+    speak: "Baeyer-Villiger oxidation converts ketones to esters using peroxy acids.",
+    details: "Inserts oxygen between carbonyl C and adjacent carbon. Forms ester. Stereospecific.",
+    conditions: "m-CPBA or other peroxy acid, solvent",
+    state: "R₂C=O + RCOOOH → RCOOR + carboxylic acid",
+    observation: "Ester formed"
+  },
+  {
+    id: 152,
+    name: "Craig Oxidation",
+    equation: "chromium(III) salt + base → chromium(VI)",
+    reactants: ["cr compound"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Oxidizing Agent",
+    color_hint: "Green Cr(III) converted to yellow CrO₄²⁻.",
+    speak: "Craig oxidation uses chromium compounds as oxidizing agents.",
+    details: "Converts Cr(III) to Cr(VI). Forms dichromate or chromate. Used in various oxidations.",
+    conditions: "Acidic or basic conditions",
+    state: "Cr(III) + oxidant → Cr(VI)",
+    observation: "Yellow oxidizing species formed"
+  },
+  {
+    id: 153,
+    name: "Modified Hunsdiecker Reaction",
+    equation: "RCOO Ag + Br₂ → RBr + AgBr + CO₂",
+    reactants: ["silver salt carboxylic acid","bromine"],
+    type: "Decarboxylation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkyl Bromide + AgBr",
+    color_hint: "Carboxylic acid converted to alkyl halide.",
+    speak: "Hunsdiecker reaction converts carboxylic acids to alkyl halides.",
+    details: "Silver carboxylate reacts with Br₂. Removes CO₂. Forms R-Br. Used in synthesis.",
+    conditions: "Silver carboxylate, Br₂, CCl₄",
+    state: "RCOO Ag + Br₂ → RBr + CO₂ + AgBr",
+    observation: "Alkyl halide formed"
+  },
+  {
+    id: 154,
+    name: "Kolbe Reaction",
+    equation: "phenol + CO₂ + base → salicylic acid",
+    reactants: ["phenol","carbon dioxide"],
+    type: "Carboxylation", energy: "Exothermic", level: "Class 12",
+    product: "Salicylic Acid",
+    color_hint: "Phenolic OH carboxylated ortho to OH.",
+    speak: "Kolbe reaction converts phenols to salicylic acids using CO₂.",
+    details: "Phenoxide attacks CO₂. Ortho-substitution. Important pharmaceutical compound.",
+    conditions: "CO₂, 150°C, base, pressure",
+    state: "Ph-OH + CO₂ → salicylic acid",
+    observation: "Carboxylic acid formed"
+  },
+  {
+    id: 155,
+    name: "Schiemann Reaction",
+    equation: "ArNH₂ + NaNO₂ + HBF₄ → ArBF₄ → ArF",
+    reactants: ["aniline","nitrite","boron trifluoride"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aryl Fluoride",
+    color_hint: "Amine converted to fluoride via diazonium.",
+    speak: "Schiemann reaction converts arylamines to aryl fluorides.",
+    details: "Forms diazonium salt, converts to fluoroborate, then fluoride. Useful for Ar-F bond.",
+    conditions: "NaNO₂, HBF₄, heat",
+    state: "Ar-NH₂ → ArN₂⁺ → Ar-F",
+    observation: "Aryl fluoride formed"
+  },
+  {
+    id: 156,
+    name: "Sandmeyer Reaction",
+    equation: "ArNH₂ + NaNO₂ + HCl/CuCl → ArCl",
+    reactants: ["aniline","nitrite","copper chloride"],
+    type: "Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Aryl Chloride",
+    color_hint: "Amine converted to chloride via diazonium.",
+    speak: "Sandmeyer reaction converts arylamines to aryl chlorides using Cu(I).",
+    details: "Forms diazonium salt, reduces with Cu(I). Aryl halides useful in synthesis.",
+    conditions: "NaNO₂, HCl, CuCl, aqueous",
+    state: "Ar-NH₂ + NaNO₂ → ArN₂⁺ → Ar-Cl",
+    observation: "Aryl chloride formed"
+  },
+  {
+    id: 157,
+    name: "Gomberg-Bachmann Reaction",
+    equation: "ArNH₂ + HNO₂ + ArH → biaryls",
+    reactants: ["aniline","nitrous acid","arene"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Biaryl",
+    color_hint: "Formation of C-C bond between aromatic rings.",
+    speak: "Gomberg-Bachmann reaction couples arylamines with arenes via diazonium.",
+    details: "Forms diazonium, couples with nucleophilic aromatic. Biaryl formation.",
+    conditions: "NaNO₂, HX, copper or zinc",
+    state: "ArNH₂ → ArN₂⁺ + ArH → Ar-Ar",
+    observation: "Biaryl product formed"
+  },
+  {
+    id: 158,
+    name: "Glaser Coupling",
+    equation: "2HC≡C-Ar + Cu(OAc)₂/TMEDA + O₂ → Ar-C≡C-C≡C-Ar",
+    reactants: ["terminal alkyne","copper acetate"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Diyne",
+    color_hint: "Formation of C≡C-C≡C bond.",
+    speak: "Glaser coupling forms diyne products from terminal alkynes.",
+    details: "Oxidative coupling of alkynes. Cu(II) oxidizes alkyne. Forms extended conjugation.",
+    conditions: "Cu(OAc)₂, TMEDA, O₂",
+    state: "2 HC≡C-Ar → Ar-C≡C-C≡C-Ar",
+    observation: "Diyne formed"
+  },
+  {
+    id: 159,
+    name: "Sonogashira Coupling",
+    equation: "Ar-X + HC≡C-R → Ar-C≡C-R",
+    reactants: ["aryl halide","terminal alkyne"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aryl Alkyne",
+    color_hint: "C-C triple bond formed between arene and alkyne.",
+    speak: "Sonogashira coupling forms C-C bonds between arenes and alkynes.",
+    details: "Pd/Cu catalytic system. Terminal alkyne. Mild conditions. Useful in synthesis.",
+    conditions: "Pd(PPh₃)₂Cl₂, CuI, base",
+    state: "Ar-X + HC≡C-R → Ar-C≡C-R",
+    observation: "Aryl alkyne formed"
+  },
+  {
+    id: 160,
+    name: "Heck Reaction",
+    equation: "Ar-X + alkene → Ar-CH=CH-R",
+    reactants: ["aryl halide","alkene"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aryl Alkene",
+    color_hint: "C-C double bond formed.",
+    speak: "Heck reaction couples aryl halides with alkenes using palladium catalyst.",
+    details: "Pd-catalyzed C-C bond formation. Forms conjugated alkene. Important coupling.",
+    conditions: "PdCl₂, PPh₃, base, heat",
+    state: "Ar-X + alkene → Ar-CH=CH-R",
+    observation: "Aryl alkene formed"
+  },
+  {
+    id: 161,
+    name: "Suzuki Coupling",
+    equation: "Ar-B(OR)₂ + Ar'-X → Ar-Ar'",
+    reactants: ["arylboronic acid","aryl halide"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Biaryl",
+    color_hint: "C-C bond formed between two aromatic rings.",
+    speak: "Suzuki coupling forms biaryls from arylboronic acids and aryl halides.",
+    details: "Pd-catalyzed. Versatile, mild conditions. Widely used in synthesis.",
+    conditions: "Pd(PPh₃)₄, K₂CO₃, solvent",
+    state: "Ar-B(OR)₂ + Ar'-X → Ar-Ar'",
+    observation: "Biaryl formed"
+  },
+  {
+    id: 162,
+    name: "Negishi Coupling",
+    equation: "Ar-ZnX + Ar'-X → Ar-Ar'",
+    reactants: ["organozinc","aryl halide"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Biaryl",
+    color_hint: "C-C coupling using zinc reagent.",
+    speak: "Negishi coupling couples organozinc compounds with organic halides.",
+    details: "Pd-catalyzed. Arylzinc or alkylzinc. Tolerates many functional groups.",
+    conditions: "Pd(PPh₃)₂Cl₂, organozinc",
+    state: "R-ZnX + R'-X → R-R'",
+    observation: "Coupled product formed"
+  },
+  {
+    id: 163,
+    name: "Stille Coupling",
+    equation: "Ar-SnBu₃ + Ar'-X → Ar-Ar'",
+    reactants: ["organostannane","aryl halide"],
+    type: "Coupling", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Coupled Product",
+    color_hint: "C-C bond from organotin compound.",
+    speak: "Stille coupling couples organostannanes with organic halides.",
+    details: "Pd-catalyzed. Uses stannane reagent. Good functional group compatibility.",
+    conditions: "Pd(PPh₃)₄, LiCl, solvent",
+    state: "R-SnBu₃ + R'-X → R-R'",
+    observation: "Coupled product formed"
+  },
+  {
+    id: 164,
+    name: "Ullmann Coupling",
+    equation: "2 Ar-X + Cu → Ar-Ar + CuX₂",
+    reactants: ["aryl halide","copper"],
+    type: "Coupling", energy: "Exothermic", level: "Class 12",
+    product: "Biaryl",
+    color_hint: "Copper-mediated C-C coupling.",
+    speak: "Ullmann coupling forms biaryls from aryl halides using copper.",
+    details: "Historical coupling method. Cu as reagent and catalyst. High temperature needed.",
+    conditions: "Cu, high temperature (>200°C)",
+    state: "2 Ar-X + Cu → Ar-Ar + CuX₂",
+    observation: "Biaryl formed"
+  },
+  {
+    id: 165,
+    name: "Wittig Olefination",
+    equation: "C=O + Ph₃P=CHR → C=CHR",
+    reactants: ["carbonyl","ylide"],
+    type: "Condensation", energy: "Exothermic", level: "Class 12",
+    product: "Alkene",
+    color_hint: "Formation of C=C from C=O.",
+    speak: "Wittig reaction converts carbonyls to alkenes using phosphonium ylides.",
+    details: "Stereoselective for E or Z alkenes. Uses phosphine oxide byproduct.",
+    conditions: "Ylide reagent, solvent",
+    state: "C=O + ylide → C=C",
+    observation: "Alkene formed"
+  },
+  {
+    id: 166,
+    name: "Reduction of Azide to Amine",
+    equation: "R-N₃ + PPh₃ + H₂O → R-NH₂",
+    reactants: ["azide","triphenylphosphine"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Primary Amine",
+    color_hint: "Conversion of azide to amine.",
+    speak: "Azides are reduced to primary amines using triphenylphosphine.",
+    details: "Staudinger reaction. Forms iminophosphorane intermediate. Useful for N synthesis.",
+    conditions: "PPh₃, aqueous, heat",
+    state: "R-N₃ + PPh₃ → R-NH₂",
+    observation: "Amine formed"
+  },
+  {
+    id: 167,
+    name: "Click Reaction",
+    equation: "alkyne + azide → triazole",
+    reactants: ["alkyne","azide"],
+    type: "Cycloaddition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "1,2,3-Triazole",
+    color_hint: "Formation of five-membered heterocycle.",
+    speak: "Click reaction forms 1,2,3-triazoles from alkynes and azides.",
+    details: "Cu-catalyzed cycloaddition. High yield, no byproducts. Popular in synthesis.",
+    conditions: "CuI, DIPEA, solvent",
+    state: "alkyne + azide → triazole",
+    observation: "Triazole heterocycle formed"
+  },
+  {
+    id: 168,
+    name: "Azide Synthesis via SN2",
+    equation: "R-X + N₃⁻ → R-N₃",
+    reactants: ["alkyl halide","azide ion"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Azide",
+    color_hint: "Displacement of halide by azide.",
+    speak: "Primary and secondary alkyl halides form azides via SN2 reaction.",
+    details: "Azide is good nucleophile. Forms stable azide. Used for click chemistry.",
+    conditions: "Azide salt, polar solvent",
+    state: "R-X + N₃⁻ → R-N₃",
+    observation: "Azide product formed"
+  },
+  {
+    id: 169,
+    name: "Nitrile Synthesis via SN2",
+    equation: "R-X + CN⁻ → R-C≡N",
+    reactants: ["alkyl halide","cyanide ion"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Nitrile",
+    color_hint: "Displacement of halide by cyanide.",
+    speak: "Alkyl halides form nitriles via SN2 reaction with cyanide.",
+    details: "Cyanide is strong nucleophile. Forms C-C triple bond. Used in synthesis.",
+    conditions: "KCN or NaCN, polar solvent",
+    state: "R-X + CN⁻ → R-C≡N",
+    observation: "Nitrile formed"
+  },
+  {
+    id: 170,
+    name: "Strecker Synthesis",
+    equation: "RCHO + NH₃ + HCN → RCH(NH₂)CN → RCH(NH₂)COOH (amino acid)",
+    reactants: ["aldehyde","ammonia","hydrogen cyanide"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Amino Acid",
+    color_hint: "Formation of amino acid from aldehyde.",
+    speak: "Strecker synthesis produces amino acids from aldehydes.",
+    details: "Forms cyanohydrin then iminium. Hydrolysis gives amino acid. Important in biochemistry.",
+    conditions: "Aqueous, ambient temperature",
+    state: "RCHO + NH₃ + HCN → amino acid",
+    observation: "Amino acid formed"
+  },
+  {
+    id: 171,
+    name: "Ugi Reaction",
+    equation: "aldehyde + amine + carboxylic acid + isocyanide → α-carboxylic amide",
+    reactants: ["aldehyde","amine","acid","isocyanide"],
+    type: "Multicomponent", energy: "Exothermic", level: "D.Pharmacy",
+    product: "α-Carboxylic Amide",
+    color_hint: "Multicomponent coupling reaction.",
+    speak: "Ugi reaction combines four components to form α-carboxylic amides.",
+    details: "4-component reaction. High versatility. Used in drug synthesis.",
+    conditions: "Solvent, mild conditions",
+    state: "4 components → amide product",
+    observation: "Multicomponent product formed"
+  },
+  {
+    id: 172,
+    name: "Passerini Reaction",
+    equation: "aldehyde + carboxylic acid + isocyanide → α-acyloxy amide",
+    reactants: ["aldehyde","acid","isocyanide"],
+    type: "Multicomponent", energy: "Exothermic", level: "D.Pharmacy",
+    product: "α-Acyloxy Amide",
+    color_hint: "3-component coupling.",
+    speak: "Passerini reaction combines three components to form α-acyloxy amides.",
+    details: "3-component reaction. Forms ester-amide product. Mild conditions.",
+    conditions: "Room temperature, solvent",
+    state: "aldehyde + acid + isocyanide → product",
+    observation: "Coupled product formed"
+  },
+  {
+    id: 173,
+    name: "Biginelli Reaction",
+    equation: "aldehyde + urea + β-keto ester → dihydropyrimidinone",
+    reactants: ["aldehyde","urea","keto ester"],
+    type: "Cyclocondensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Dihydropyrimidinone",
+    color_hint: "Formation of 6-membered nitrogen heterocycle.",
+    speak: "Biginelli reaction forms dihydropyrimidinones from three components.",
+    details: "3-component reaction. Forms heterocycle. Important in pharmaceutical synthesis.",
+    conditions: "Acid catalyst, heat",
+    state: "3 components → heterocycle",
+    observation: "Heterocyclic product formed"
+  },
+  {
+    id: 174,
+    name: "Gewald Reaction",
+    equation: "α-cyano ester + sulfur + amine → 2-aminothiophene",
+    reactants: ["cyano ester","sulfur","amine"],
+    type: "Cyclocondensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "2-Aminothiophene",
+    color_hint: "Formation of thiophene ring.",
+    speak: "Gewald reaction forms 2-aminothiophenes from three components.",
+    details: "3-component reaction. Forms sulfur heterocycle. Used in synthesis.",
+    conditions: "Base, solvent, heat",
+    state: "3 components → thiophene",
+    observation: "Thiophene product formed"
+  },
+  {
+    id: 175,
+    name: "Hantzsch Dihydropyridine Synthesis",
+    equation: "aldehyde + β-keto ester + ammonia → dihydropyridine",
+    reactants: ["aldehyde","keto ester","ammonia"],
+    type: "Cyclocondensation", energy: "Exothermic", level: "Class 12",
+    product: "Dihydropyridine",
+    color_hint: "Formation of 6-membered N-heterocycle.",
+    speak: "Hantzsch reaction forms dihydropyridines from three components.",
+    details: "3-component multicomponent reaction. Forms pyridine precursor. Useful reducing agent.",
+    conditions: "Acid catalyst, solvent",
+    state: "3 components → dihydropyridine",
+    observation: "Heterocyclic product formed"
+  },
+  {
+    id: 176,
+    name: "Kabachnik-Fields Reaction",
+    equation: "aldehyde + amine + phosphonite → α-aminophosphonate",
+    reactants: ["aldehyde","amine","phosphite"],
+    type: "Multicomponent", energy: "Exothermic", level: "D.Pharmacy",
+    product: "α-Aminophosphonate",
+    color_hint: "Multicomponent phosphorus coupling.",
+    speak: "Kabachnik-Fields reaction forms α-aminophosphonates.",
+    details: "3-component reaction. Forms P-C-N bond. Used in drug synthesis.",
+    conditions: "Solvent, ambient to moderate heat",
+    state: "3 components → aminophosphonate",
+    observation: "Phosphorus product formed"
+  },
+  {
+    id: 177,
+    name: "Fenkelstein Reaction",
+    equation: "R-Br + NaI → R-I + NaBr",
+    reactants: ["alkyl bromide","sodium iodide"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "Class 12",
+    product: "Alkyl Iodide",
+    color_hint: "Exchange of bromide for iodide.",
+    speak: "Finkelstein reaction converts alkyl bromides to alkyl iodides using sodium iodide.",
+    details: "SN2 reaction. Iodide is better nucleophile. Acetone drives equilibrium. Useful for halide exchange.",
+    conditions: "Acetone, heat",
+    state: "R-Br + I⁻ → R-I + Br⁻",
+    observation: "Iodide product formed"
+  },
+  {
+    id: 178,
+    name: "Mitsunobu Reaction",
+    equation: "ROH + R'CO₂H + PPh₃ + DIAD → R'CO₂R",
+    reactants: ["alcohol","acid","triphenylphosphine"],
+    type: "Inversion", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Ester",
+    color_hint: "Inversion of stereochemistry in ester formation.",
+    speak: "Mitsunobu reaction converts alcohols to esters with inversion of stereochemistry.",
+    details: "PPh₃ + DIAD activates acid. SN2-like mechanism. Inverts stereochemistry. Important in synthesis.",
+    conditions: "PPh₃, DIAD, solvent",
+    state: "ROH + R'COOH → R'COOR (inverted)",
+    observation: "Ester with inverted stereochemistry"
+  },
+  {
+    id: 179,
+    name: "Appel Reaction",
+    equation: "ROH + CCl₄ + PPh₃ → RCl",
+    reactants: ["alcohol","carbon tetrachloride","triphenylphosphine"],
+    type: "Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkyl Chloride",
+    color_hint: "Conversion of OH to Cl.",
+    speak: "Appel reaction converts alcohols to alkyl chlorides using CCl₄ and triphenylphosphine.",
+    details: "Forms alkyl chloride with inversion. Uses carbon tetrachloride as Cl source.",
+    conditions: "PPh₃, CCl₄",
+    state: "ROH + CCl₄ + PPh₃ → RCl",
+    observation: "Chloride product formed"
+  },
+  {
+    id: 180,
+    name: "Sharpless Epoxidation",
+    equation: "alkene + tert-butyl hydroperoxide → epoxide",
+    reactants: ["alkene","tert-butyl hydroperoxide"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Epoxide",
+    color_hint: "Formation of three-membered oxygen ring.",
+    speak: "Sharpless epoxidation forms epoxides from allylic alcohols with high enantioselectivity.",
+    details: "Ti-catalyzed asymmetric epoxidation. Very high ee. Chiral synthesis important.",
+    conditions: "Ti(O-i-Pr)₄, (+) or (-) DET, TBHP",
+    state: "allylic alcohol + TBHP → epoxide",
+    observation: "Epoxide formed with high selectivity"
+  },
+  {
+    id: 181,
+    name: "Osmium Tetroxide Dihydroxylation",
+    equation: "alkene + OsO₄ → cis-diol",
+    reactants: ["alkene","osmium tetroxide"],
+    type: "Oxidation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "cis-Diol",
+    color_hint: "Addition of OH groups across double bond.",
+    speak: "Osmium tetroxide forms cis-diols from alkenes in a concerted reaction.",
+    details: "Adds OH groups to same face of double bond (cis). Syn addition. Used in synthesis.",
+    conditions: "OsO₄, NMO, solvent",
+    state: "Alkene + OsO₄ → cis-diol",
+    observation: "Diol product formed"
+  },
+  {
+    id: 182,
+    name: "Dihydroxylation with Permanganate",
+    equation: "alkene + KMnO₄ → diol (anti)",
+    reactants: ["alkene","permanganate"],
+    type: "Oxidation", energy: "Exothermic", level: "Class 12",
+    product: "Anti-Diol",
+    color_hint: "Cleavage of double bond to diol.",
+    speak: "Permanganate oxidizes alkenes to diols in an anti-stereochemistry.",
+    details: "Forms anti-diol (opposite faces). Different from OsO₄. Can further oxidize to ketone/acid.",
+    conditions: "Cold dilute KMnO₄",
+    state: "Alkene + KMnO₄ → anti-diol",
+    observation: "Diol formed"
+  },
+  {
+    id: 183,
+    name: "Ozonolysis of Alkene",
+    equation: "alkene + O₃ → ozonide → aldehydes or ketones",
+    reactants: ["alkene","ozone"],
+    type: "Oxidative Cleavage", energy: "Exothermic", level: "Class 12",
+    product: "Carbonyl Compounds",
+    color_hint: "Cleavage of C=C double bond.",
+    speak: "Ozonolysis cleaves alkene double bonds to form aldehydes or ketones.",
+    details: "Forms molozonide intermediate. Reductive or oxidative workup. Determines structure.",
+    conditions: "O₃, then Zn/H₂O or H₂O₂",
+    state: "Alkene + O₃ → aldehydes/ketones",
+    observation: "Carbonyl products formed"
+  },
+  {
+    id: 184,
+    name: "Epoxide Opening with Nucleophile",
+    equation: "epoxide + nucleophile → ring-opened product",
+    reactants: ["epoxide"],
+    type: "Nucleophilic Addition", energy: "Exothermic", level: "Class 12",
+    product: "Opened Alcohol",
+    color_hint: "Nucleophilic ring opening of three-membered ring.",
+    speak: "Epoxides undergo ring-opening reactions with nucleophiles to form alcohols.",
+    details: "SN2-like mechanism. Inversion of stereochemistry. Forms more substituted position preferentially.",
+    conditions: "Nucleophile, solvent",
+    state: "Epoxide + Nu → opened product",
+    observation: "Ring-opened alcohol product"
+  },
+  {
+    id: 185,
+    name: "Directed Metalation",
+    equation: "aromatic + LDA → carbanion → functionalization",
+    reactants: ["aromatic compound","LDA"],
+    type: "Deprotonation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Functionalized Aromatic",
+    color_hint: "Generation of aromatic carbanion.",
+    speak: "Directed metalation generates aromatic carbanions for functionalization.",
+    details: "Directing groups activate ortho/para positions. Forms carbanion. Used in synthesis.",
+    conditions: "LDA, low temperature, inert atmosphere",
+    state: "Ar-H + LDA → Ar-Li (carbanion)",
+    observation: "Functionalized aromatic"
+  },
+  {
+    id: 186,
+    name: "Grignard Reaction with Carbonyl",
+    equation: "R-MgX + R'₂C=O → R-CR'₂-O-MgX → R-CR'₂-OH",
+    reactants: ["Grignard reagent","carbonyl"],
+    type: "Nucleophilic Addition", energy: "Exothermic", level: "Class 12",
+    product: "Alcohol",
+    color_hint: "Addition to carbonyl forming alcohol.",
+    speak: "Grignard reagents react with carbonyls to form alcohols.",
+    details: "Nucleophilic addition of carbanion. Important C-C bond formation. Forms primary, secondary, or tertiary alcohols.",
+    conditions: "Ether solvent, anhydrous",
+    state: "R-MgX + C=O → R-CH(OH)-R'",
+    observation: "Alcohol product formed"
+  },
+  {
+    id: 187,
+    name: "Organolithium Addition to Carbonyl",
+    equation: "R-Li + R'₂C=O → R-CR'₂-OH",
+    reactants: ["organolithium","carbonyl"],
+    type: "Nucleophilic Addition", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alcohol",
+    color_hint: "Addition of carbanion to carbonyl.",
+    speak: "Organolithium compounds add to carbonyls to form alcohols.",
+    details: "Stronger nucleophile than Grignard. More reactive with esters, acids. C-C bond formation.",
+    conditions: "Ether solvent, low temperature",
+    state: "R-Li + C=O → R-CH(OH)-R'",
+    observation: "Alcohol product"
+  },
+  {
+    id: 188,
+    name: "Enolate Formation and Alkylation",
+    equation: "RCOCH₂R' + base → enolate + R''X → RCOCH(R'')R'",
+    reactants: ["ketone or ester","base"],
+    type: "Nucleophilic Substitution", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkylated Carbonyl",
+    color_hint: "Deprotonation at α-carbon forms enolate.",
+    speak: "Enolates form from carbonyls and can be alkylated at the α-carbon.",
+    details: "Forms resonance-stabilized carbanion. Can be alkylated, condensed, etc. Important in synthesis.",
+    conditions: "Base (LDA, NaOEt), solvent",
+    state: "Ketone → enolate → alkylated product",
+    observation: "Alkylated carbonyl formed"
+  },
+  {
+    id: 189,
+    name: "Aldol Reaction - Base Catalyzed",
+    equation: "2 RCHO + base → aldol (β-hydroxy aldehyde)",
+    reactants: ["aldehyde","base"],
+    type: "Condensation", energy: "Exothermic", level: "Class 12",
+    product: "Aldol Product",
+    color_hint: "C-C bond formation between two aldehydes.",
+    speak: "Aldol reaction forms β-hydroxy aldehydes from two aldehydes using base.",
+    details: "Enolate attacks carbonyl. Forms C-C bond. Can dehydrate to unsaturated product.",
+    conditions: "Base (NaOH), aqueous or alcoholic",
+    state: "2 RCHO + base → aldol",
+    observation: "Aldol product formed"
+  },
+  {
+    id: 190,
+    name: "Crossed Aldol - Directed",
+    equation: "RCHO + R'CHO (no α-H) + base → crossed aldol",
+    reactants: ["aldehyde with α-H","aldehyde without α-H"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Crossed Aldol",
+    color_hint: "Selective coupling of two different aldehydes.",
+    speak: "Crossed aldol reactions couple two different aldehydes selectively.",
+    details: "Use aldehyde without α-H to prevent self-condensation. Forms single product.",
+    conditions: "Base, solvent",
+    state: "aldehyde1 + aldehyde2 → crossed aldol",
+    observation: "Crossed aldol product"
+  },
+  {
+    id: 191,
+    name: "Claisen Condensation",
+    equation: "2 RCH₂COR' + base → RCH=C(OR')(COR) + alcohol",
+    reactants: ["ester","base"],
+    type: "Condensation", energy: "Exothermic", level: "Class 12",
+    product: "β-Keto Ester",
+    color_hint: "Ester enolate attacks another ester carbonyl.",
+    speak: "Claisen condensation couples two ester molecules to form β-keto esters.",
+    details: "Enolate of ester attacks carbonyl of another ester. Forms β-keto ester.",
+    conditions: "NaOEt, EtOH",
+    state: "2 esters → β-keto ester",
+    observation: "β-Keto ester formed"
+  },
+  {
+    id: 192,
+    name: "Dieckmann Cyclization",
+    equation: "diester + base → β-keto ester ring",
+    reactants: ["diester","base"],
+    type: "Cyclization", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Cyclic β-Keto Ester",
+    color_hint: "Intramolecular Claisen reaction.",
+    speak: "Dieckmann reaction forms cyclic β-keto esters from diesters.",
+    details: "Intramolecular Claisen. Favors ring formation if energetically reasonable.",
+    conditions: "NaOEt, EtOH",
+    state: "Diester → cyclic β-keto ester",
+    observation: "Cyclic product formed"
+  },
+  {
+    id: 193,
+    name: "Perkin Reaction - Aromatic",
+    equation: "ArCHO + (RCH₂)₂ with base → ArCH=C(R)₂",
+    reactants: ["aromatic aldehyde","active methylene"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aromatic Alkene",
+    color_hint: "Condensation forming aromatic unsaturated compound.",
+    speak: "Perkin reaction forms aromatic alkenes from aldehydes and active methylenes.",
+    details: "Base-catalyzed condensation. Forms C=C bond. Used in pharmaceutical synthesis.",
+    conditions: "Base (NaOAc, pyridine), heat",
+    state: "ArCHO + active CH₂ → Ar-CH=C",
+    observation: "Aromatic alkene formed"
+  },
+  {
+    id: 194,
+    name: "Knoevenagel Condensation",
+    equation: "RCHO + malononitrile + base → ArCH=C(CN)₂",
+    reactants: ["aldehyde","malononitrile","base"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkene (Arylidene malononitrile)",
+    color_hint: "Condensation of aldehyde with malononitrile.",
+    speak: "Knoevenagel condensation couples aldehydes with malononitrile.",
+    details: "More reactive than aldol. Forms extended conjugation. Used in synthesis.",
+    conditions: "Base, solvent, mild conditions",
+    state: "RCHO + malononitrile → ArCH=C(CN)₂",
+    observation: "Conjugated alkene formed"
+  },
+  {
+    id: 195,
+    name: "Witting-Type Olefination",
+    equation: "C=O + stabilized ylide → alkene",
+    reactants: ["carbonyl","stabilized ylide"],
+    type: "Condensation", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Alkene",
+    color_hint: "Stabilized ylide forms preferentially E-alkenes.",
+    speak: "Stabilized ylides react with carbonyls to form E-alkenes.",
+    details: "More stable ylides. Forms E-selectivity. Important variant of Wittig reaction.",
+    conditions: "Base, solvent",
+    state: "C=O + ylide → C=C",
+    observation: "Alkene formed with selectivity"
+  },
+  {
+    id: 196,
+    name: "Reduction of Carboxylic Acid to Aldehyde",
+    equation: "RCOOH + DIBAL-H → RCHO",
+    reactants: ["carboxylic acid","DIBAL-H"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aldehyde",
+    color_hint: "Reduction of acid to aldehyde.",
+    speak: "Diisobutyl aluminum hydride reduces carboxylic acids to aldehydes.",
+    details: "DIBAL-H = selective reducing agent. Stops at aldehyde. Important functional group control.",
+    conditions: "DIBAL-H, low temperature (-78°C)",
+    state: "RCOOH → RCHO",
+    observation: "Aldehyde formed"
+  },
+  {
+    id: 197,
+    name: "Reduction of Ester to Aldehyde",
+    equation: "RCOOR' + DIBAL-H → RCHO",
+    reactants: ["ester","DIBAL-H"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aldehyde",
+    color_hint: "Chemoselective reduction of ester.",
+    speak: "Diisobutyl aluminum hydride selectively reduces esters to aldehydes.",
+    details: "Stops at aldehyde. Doesn't reduce further to alcohol. Useful chemoselectivity.",
+    conditions: "DIBAL-H, low temperature, stoichiometric",
+    state: "Ester → aldehyde",
+    observation: "Aldehyde formed selectively"
+  },
+  {
+    id: 198,
+    name: "Reduction of Nitrile to Amine",
+    equation: "R-C≡N + LiAlH₄ → R-CH₂-NH₂",
+    reactants: ["nitrile","lithium aluminum hydride"],
+    type: "Reduction", energy: "Exothermic", level: "Class 12",
+    product: "Primary Amine",
+    color_hint: "Reduction of C≡N triple bond.",
+    speak: "Lithium aluminum hydride reduces nitriles to primary amines.",
+    details: "Strong reducing agent. Reduces triple bond. Forms primary amine.",
+    conditions: "LiAlH₄, ether, heat",
+    state: "R-C≡N → R-CH₂-NH₂",
+    observation: "Primary amine formed"
+  },
+  {
+    id: 199,
+    name: "Reduction of Amide to Amine",
+    equation: "R-CO-NHR' + LiAlH₄ → R-CH₂-NHR'",
+    reactants: ["amide","lithium aluminum hydride"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Amine",
+    color_hint: "Reduction of C=O and C-N bonds.",
+    speak: "Lithium aluminum hydride reduces amides to amines.",
+    details: "Reduces carbonyl and C-N. Forms amines. Important in synthesis.",
+    conditions: "LiAlH₄, ether, heat",
+    state: "RCONH₂ → RCH₂NH₂",
+    observation: "Amine formed"
+  },
+  {
+    id: 200,
+    name: "Selective Reduction with DIBAL-H",
+    equation: "nitrile + DIBAL-H → imine → aldehyde (with workup)",
+    reactants: ["nitrile","DIBAL-H"],
+    type: "Reduction", energy: "Exothermic", level: "D.Pharmacy",
+    product: "Aldehyde (via imine intermediate)",
+    color_hint: "Selective reduction of nitrile to aldehyde.",
+    speak: "DIBAL-H selectively reduces nitriles to aldehydes via imine intermediate.",
+    details: "Stops at imine level. Careful workup gives aldehyde. Useful for selective reduction.",
+    conditions: "DIBAL-H, low temp, careful hydrolysis",
+    state: "R-C≡N → R-CHO",
+    observation: "Aldehyde formed from nitrile"
+  }
+];
+
+// ─────────────────────────────────────────────
+//  ALIAS MAP – common name to formula/key
+// ─────────────────────────────────────────────
+const ALIAS = {
+  "hydrogen": "h2", "oxygen": "o2", "water": "h2o",
+  "carbon": "c", "carbon dioxide": "co2", "co2": "co2",
+  "calcium oxide": "cao", "quick lime": "cao", "quicklime": "cao",
+  "slaked lime": "ca(oh)2", "lime water": "ca(oh)2",
+  "limestone": "caco3", "marble": "caco3", "chalk": "caco3",
+  "iron": "fe", "copper": "cu", "zinc": "zn", "sodium": "na",
+  "magnesium": "mg", "silver": "ag", "nitrogen": "n2",
+  "ammonia": "nh3", "methane": "ch4", "ethanol": "c2h5oh",
+  "alcohol": "c2h5oh", "acetic acid": "ch3cooh", "vinegar": "ch3cooh",
+  "hydrochloric acid": "hcl", "sulphuric acid": "h2so4",
+  "sodium hydroxide": "naoh", "caustic soda": "naoh",
+  "baking soda": "nahco3", "sodium bicarbonate": "nahco3",
+  "milk of magnesia": "mg(oh)2", "magnesia": "mg(oh)2",
+  "aluminium hydroxide": "al(oh)3",
+  "hydrogen peroxide": "h2o2", "antiseptic": "h2o2",
+  "potassium permanganate": "kmno4", "condy": "kmno4",
+  "boric acid": "h3bo3", "borax": "na2b4o7",
+  "zinc oxide": "zno", "calamine": "zno",
+  "iodine": "i2", "potassium iodide": "ki",
+  "glucose": "c6h12o6", "sugar": "c6h12o6",
+  "copper oxide": "cuo", "copper sulphate": "cuso4",
+  "ferrous sulphate": "feso4", "iron sulphate": "feso4",
+  "silver bromide": "agbr", "silver nitrate": "agno3",
+  "sodium carbonate": "na2co3", "washing soda": "na2co3",
+  "natural gas": "ch4", "lpg": "ch4",
+  "antacid": "nahco3", "respiration": "c6h12o6",
+  "photosynthesis": "co2", "fermentation": "c6h12o6",
+  "ammonium chloride": "nh4cl", "expectorant": "nh4cl",
+  "haber": "n2", "contact process": "so2", "ostwald": "nh3"
+};
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let currentFilter = "all";
+let currentSearch = "";
+let openCardId = null;
+let speakingId = null;
+
+// ─────────────────────────────────────────────
+//  UTILITY
+// ─────────────────────────────────────────────
+function normalize(str) {
+  return str.toLowerCase().trim()
+    .replace(/[₀-₉]/g, m => String.fromCharCode(m.charCodeAt(0) - 8272))
+    .replace(/\s+/g, ' ');
+}
+
+function typeClass(type) {
+  const map = {
+    "Combination": "type-combination",
+    "Decomposition": "type-decomposition",
+    "Displacement": "type-displacement",
+    "Double Displacement": "type-double",
+    "Combustion": "type-combustion",
+    "Neutralization": "type-neutralization",
+    "Precipitation": "type-precipitation",
+    "Redox": "type-redox",
+    "Pharma": "type-pharma",
+    "Industrial": "type-industrial"
+  };
+  return map[type] || "type-combination";
+}
+
+function energyClass(e) {
+  if (e === "Exothermic") return "meta-exo";
+  if (e === "Endothermic") return "meta-endo";
+  return "meta-neutral";
+}
+
+function levelClass(l) { return "meta-class"; }
+
+// ─────────────────────────────────────────────
+//  SEARCH LOGIC
+// ─────────────────────────────────────────────
+function getFilteredReactions() {
+  let reactions = REACTIONS;
+
+  // Filter by level / type
+  if (currentFilter !== "all") {
+    reactions = reactions.filter(r =>
+      r.level === currentFilter || r.type === currentFilter
+    );
+  }
+
+  // Search
+  if (currentSearch.trim()) {
+    const raw = normalize(currentSearch);
+
+    // Replace aliases
+    let query = raw;
+    for (const [alias, key] of Object.entries(ALIAS)) {
+      query = query.replace(new RegExp(alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), key);
+    }
+
+    const tokens = query.split(/[\s+]+/).filter(Boolean);
+
+    reactions = reactions.filter(r => {
+      const reactantsNorm = r.reactants.map(x => normalize(x));
+      const nameNorm = normalize(r.name);
+      const equationNorm = normalize(r.equation);
+      const productNorm = normalize(r.product);
+
+      // Check if any token matches
+      return tokens.some(tok =>
+        reactantsNorm.some(rx => rx.includes(tok) || tok.includes(rx)) ||
+        nameNorm.includes(tok) ||
+        equationNorm.includes(tok) ||
+        productNorm.includes(tok) ||
+        normalize(r.type).includes(tok) ||
+        normalize(r.level).includes(tok)
+      );
+    });
+  }
+
+  return reactions;
+}
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const reactions = getFilteredReactions();
+  const grid = document.getElementById("cardsGrid");
+  const resultMsg = document.getElementById("resultMsg");
+  const showingCount = document.getElementById("showingCount");
+  const resultsCount = document.getElementById("resultsCount");
+
+  showingCount.textContent = reactions.length;
+
+  resultMsg.className = "";
+  resultMsg.style.display = "none";
+
+  if (currentSearch.trim()) {
+    if (reactions.length === 0) {
+      resultMsg.className = "notfound";
+      resultMsg.textContent = `❌ "${currentSearch}" ke liye koi reaction nahi mila. Try: H2 + O2, NaOH + HCl`;
+      resultMsg.style.display = "block";
+    } else {
+      resultMsg.className = "found";
+      resultMsg.textContent = `✅ ${reactions.length} reaction${reactions.length > 1 ? 's' : ''} found for "${currentSearch}"`;
+      resultMsg.style.display = "block";
+    }
+    resultsCount.textContent = "";
+  } else {
+    resultsCount.textContent = `Showing ${reactions.length} reactions`;
+  }
+
+  if (reactions.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚗️</div>
+        <div class="empty-title">No Reactions Found</div>
+        <div class="empty-sub">Try different keywords or clear the filter</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = reactions.map((r, idx) => `
+    <div class="reaction-card" data-type="${r.type}" data-id="${r.id}" style="animation-delay:${idx * 0.04}s">
+      <div class="card-top" onclick="toggleDetails(${r.id})">
+        <div class="type-badge ${typeClass(r.type)}">${r.type}</div>
+        <div class="card-main">
+          <div class="reaction-equation ${typeClass(r.type)}">${r.equation}</div>
+          <div class="reaction-name">${r.name}</div>
+          <div class="card-meta">
+            <span class="meta-pill ${energyClass(r.energy)}">${r.energy}</span>
+            <span class="meta-pill ${levelClass(r.level)}">${r.level}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-speak" id="speak-${r.id}" onclick="event.stopPropagation(); speakReaction(${r.id})" title="Listen">🔊</button>
+          <button class="btn-expand" id="expand-${r.id}" title="Details">▾</button>
+        </div>
+      </div>
+      <div class="card-details" id="details-${r.id}">
+        <div class="details-inner">
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">Products</div>
+              <div class="detail-value">${r.product}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Conditions</div>
+              <div class="detail-value">${r.conditions}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">States</div>
+              <div class="detail-value" style="font-size:0.75rem">${r.state}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Observation / Colour</div>
+              <div class="detail-value">${r.observation || r.color_hint}</div>
+            </div>
+          </div>
+          <div class="detail-description">
+            <div class="detail-desc-title">📖 Explanation</div>
+            ${r.details}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Re-open any previously open card
+  if (openCardId) {
+    const el = document.getElementById(`details-${openCardId}`);
+    if (el) el.classList.add('open');
+  }
+}
+
+// ─────────────────────────────────────────────
+//  TOGGLE DETAILS
+// ─────────────────────────────────────────────
+function toggleDetails(id) {
+  const el = document.getElementById(`details-${id}`);
+  const btn = document.getElementById(`expand-${id}`);
+  if (!el) return;
+
+  if (el.classList.contains('open')) {
+    el.classList.remove('open');
+    btn.textContent = '▾';
+    openCardId = null;
+  } else {
+    // Close others
+    document.querySelectorAll('.card-details.open').forEach(d => {
+      d.classList.remove('open');
+    });
+    document.querySelectorAll('.btn-expand').forEach(b => b.textContent = '▾');
+
+    el.classList.add('open');
+    btn.textContent = '▴';
+    openCardId = id;
+
+    // Scroll into view
+    setTimeout(() => {
+      el.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+}
+
+// ─────────────────────────────────────────────
+//  TEXT TO SPEECH
+// ─────────────────────────────────────────────
+function speakReaction(id) {
+  if (!window.speechSynthesis) {
+    alert("Your browser does not support text-to-speech.");
+    return;
+  }
+
+  // Stop current speech
+  if (speakingId !== null) {
+    window.speechSynthesis.cancel();
+    const prevBtn = document.getElementById(`speak-${speakingId}`);
+    if (prevBtn) prevBtn.classList.remove('speaking');
+    if (speakingId === id) { speakingId = null; return; }
+  }
+
+  const reaction = REACTIONS.find(r => r.id === id);
+  if (!reaction) return;
+
+  const text = `Reaction: ${reaction.name}. Equation: ${reaction.equation.replace(/→/g, 'gives').replace(/⇌/g, 'reversibly gives').replace(/↑/g, ' gas').replace(/↓/g, ' precipitate')}. Type: ${reaction.type}. Energy: ${reaction.energy}. ${reaction.speak}`;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+  utterance.lang = 'en-IN';
+
+  const btn = document.getElementById(`speak-${id}`);
+  if (btn) btn.classList.add('speaking');
+  speakingId = id;
+
+  utterance.onend = () => {
+    const b = document.getElementById(`speak-${id}`);
+    if (b) b.classList.remove('speaking');
+    speakingId = null;
+  };
+
+  utterance.onerror = () => {
+    const b = document.getElementById(`speak-${id}`);
+    if (b) b.classList.remove('speaking');
+    speakingId = null;
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// ─────────────────────────────────────────────
+//  SEARCH + FILTER
+// ─────────────────────────────────────────────
+function searchReaction() {
+  currentSearch = document.getElementById("searchInput").value;
+  render();
+}
+
+function quickSearch(val) {
+  document.getElementById("searchInput").value = val;
+  currentSearch = val;
+  render();
+}
+
+function filterBy(val, btn) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// Enter key search
+document.getElementById("searchInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") searchReaction();
+});
+
+// Live search (debounced)
+let debounceTimer;
+document.getElementById("searchInput").addEventListener("input", function() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    currentSearch = this.value;
+    render();
+  }, 300);
+});
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("totalCount").textContent = REACTIONS.length;
+  render();
+});
+</script>
+</body>
+</html>
